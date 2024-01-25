@@ -29,6 +29,7 @@ export default function Signin() {
               await axios.get('sanctum/csrf-cookie').then(async res=>{
                 await axios.post('api/login',{email:email
             ,password:password}).then(res=>{
+              console.log(res);
             if (res.data.role == 0) {
               localStorage.setItem('auth_token',res.data.token);
               localStorage.setItem('user_id',res.data.user_id)

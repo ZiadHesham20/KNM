@@ -1,5 +1,6 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { BallTriangle } from 'react-loader-spinner';
 
 export default function ChangeTripPrice() {
     const [tripOldPrice, settripOldPrice] = useState(null)
@@ -35,6 +36,17 @@ export default function ChangeTripPrice() {
 <button className='btn costume-btn text-black border-0 px-4 my-3'>Change</button>
           </form>
   </div>
-  </div>:"loading"}
+  </div>:<div className='vh-100 d-flex justify-content-center'>
+  <div className=' position-fixed loading ' id='thechange'><BallTriangle 
+  height={100}
+  width={100}
+  radius={5}
+  color="#FECD27"
+  ariaLabel="ball-triangle-loading"
+  wrapperClass={{}}
+  wrapperStyle=""
+  visible={true}
+/></div>
+    </div>}
   </>
 }

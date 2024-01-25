@@ -9,6 +9,8 @@ import { BallTriangle } from 'react-loader-spinner';
 
 
 export default function TourDetails() {
+  let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
+  const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
   
   const [tour, setTour] = useState(null)
   const [bookedTour, setBookedTour] = useState(null)
@@ -21,7 +23,8 @@ export default function TourDetails() {
   const [review, setReview] = useState(null)
   const [activeTab, setActiveTab] = useState('overview');
   const [reviews, setReviews] = useState(null)
-  const [currencyBase, setCurrencyBase] = useState({base:'USD',cost:'1.00'})
+ 
+  
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
 
   let {id} = useParams()
@@ -50,7 +53,8 @@ export default function TourDetails() {
 
   function getimage(e){
     
-    setimageselected(e.target.src)
+    setimageselected(e.target.id)
+   
   }
   function getRandomElements(arr, numElements) {
     const copyArr = arr.slice();
@@ -215,7 +219,7 @@ try {
             </div>
           </div>
            {tour.imageUrls.map((elem,idx)=><div className='col-3 ' key={idx}> <div  style={{'cursor':'pointer'}} >
-            <img src={`http://127.0.0.1:8000/storage/photos/${elem.image}`} className='w-100 imagelist rounded-2 ' id={elem.imageName} onClick={getimage}/>
+            <img src={`http://127.0.0.1:8000/storage/photos/${elem.image}`} className='w-100 imagelist rounded-2 ' id={elem.image} onClick={getimage}/>
             
           </div></div>)}
           
@@ -243,7 +247,6 @@ try {
       <div className={activeTab === 'plan' ? '' : 'd-none'}>
         {activeTab === 'plan' &&  <div>
      <h3 className='my-3'>Tour Plan</h3>
-     <h5 className='highlightingcolor '>Tour to the West Bank in Luxor</h5>
      <p>{tour.plan}</p></div>}
       </div>
       <div className={activeTab === 'location' ? '' : 'd-none'}>

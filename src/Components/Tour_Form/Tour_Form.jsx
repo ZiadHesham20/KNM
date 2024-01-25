@@ -8,7 +8,10 @@ import axios from 'axios';
 import { BallTriangle } from 'react-loader-spinner';
 
 export default function Tour_Form() {
-  const [currencyBase, setCurrencyBase] = useState({base:'USD',cost:'1.00'})
+  let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
+  console.log(selectedCurr);
+
+  const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
   const [tripCost, setTripCost] = useState(null)
   
   const currentDate = new Date();

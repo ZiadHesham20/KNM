@@ -112,7 +112,7 @@ export default function Home() {
         try {
           let {data} = await axios.get('api/travels')
         const numDescending = data.data.sort((a,b)=> b.booked - a.booked);
-        setPopTours(numDescending.slice(0,6))
+        setPopTours(numDescending.slice(0,4))
         setTours(data.data.slice(3,9));
         } catch (error) {
           if (error.code == 'ERR_NETWORK') {

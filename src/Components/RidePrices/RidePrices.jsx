@@ -8,7 +8,9 @@ import axios from 'axios';
 import { BallTriangle } from 'react-loader-spinner';
 
 export default function RidePrices() {
-    const [currencyBase, setCurrencyBase] = useState({base:'USD',cost:'1.00'})
+  let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
+  const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
+
     const [currentDestinations, setCurrentDestinations] = useState(null)
     const [currentDestinationCost, setCurrentDestinationCost] = useState(null)
   const [destinations, setDestinations] = useState(null)
@@ -46,6 +48,7 @@ export default function RidePrices() {
     e.preventDefault()
 
     localStorage.setItem("selectedDestinations",JSON.stringify({from:e.target.from.value,to:e.target.to.value}))
+    
     navigate('/rideprices')
   }
   // async function getDestination() {

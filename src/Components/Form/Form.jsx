@@ -12,9 +12,10 @@ export default function Form() {
 
   const currentDate = new Date();
 
-  
+  let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
+  const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
+
   const [currentDestinations, setCurrentDestinations] = useState([])
-  const [currencyBase, setCurrencyBase] = useState({base:'USD',cost:'1.00'})
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   

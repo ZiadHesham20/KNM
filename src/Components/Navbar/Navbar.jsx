@@ -72,7 +72,13 @@ function active(e){
 useEffect(() => {
   getCurrencies()
   getUserPhoto()
-  console.log(current_path.pathname);
+  
+  $('#currencychange').on("change",function(e){
+    
+    localStorage.setItem('selectedCurrency',JSON.stringify({'selectedCurrencyBase':e.target.value,'selectedCurrencyCost':e.target.selectedOptions[0].getAttribute('data-cost')}))
+   })
+
+
   switch (current_path.pathname) {
     case '/':
       $('.navele').removeClass('navlink-border');

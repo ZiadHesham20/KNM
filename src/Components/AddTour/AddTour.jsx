@@ -190,7 +190,7 @@ console.log(category);
       name="futureDate"
       onChange={handleDateChange}
       min={minDate}
-    required/>}
+    />}
             
             </div>
             <div>
