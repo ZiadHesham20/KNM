@@ -44,7 +44,7 @@ export default function Home() {
   function submitRideForm(e) {
     e.preventDefault()
 
-    localStorage.setItem("selectedDestinations",JSON.stringify({from:e.target.from.value,to:e.target.to.value}))
+    localStorage.setItem("selectedDestinations",JSON.stringify({from:e.target.from.value,to:e.target.to.value,dateTime:e.target.futureDate.value}))
 
     //setCurrentDestinations(destinations.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to))
     if (destinations.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to).length != 0) {
@@ -55,9 +55,10 @@ export default function Home() {
     console.log(destinations.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to).length);
   }
   // Slider settings
+  
     var settings = {
         dots: false,
-        infinite: true,
+        infinite: false,
         speed: 200,
         slidesToShow: 4,
         slidesToScroll: 1,
@@ -112,7 +113,7 @@ export default function Home() {
         try {
           let {data} = await axios.get('api/travels')
         const numDescending = data.data.sort((a,b)=> b.booked - a.booked);
-        setPopTours(numDescending.slice(0,4))
+        setPopTours(numDescending.slice(0,6))
         setTours(data.data.slice(3,9));
         } catch (error) {
           if (error.code == 'ERR_NETWORK') {
@@ -135,7 +136,10 @@ export default function Home() {
      getDestinations()
      getTours()
      closeOffcanvas()
-        
+     if (popTours != null) {
+      console.log(popTours.length);
+    }
+
       }, [ww])
       
   return <>
@@ -239,7 +243,7 @@ export default function Home() {
           
           <Link to={`/tourdetails/${elem.slug}`} className='text-decoration-none text-black'><div className='position-relative d-flex imghi '>
             <figure className='position-absolute  top-0 bottom-0'>            
-            <img src={elem.imageUrls[0] != undefined ? `storage/photos/${elem.imageUrls[0].image}`:""} className='w-100 imghi rounded-1' alt="Tour Image" />
+            <img src={elem.imageUrls[0] != undefined ? `https://knm-travels.com/storage/photos/${elem.imageUrls[0].image}`:""} className='w-100 imghi rounded-1' alt="Tour Image" />
             </figure>
             
             <div className='container rounded-1 slideslayer z-1'>
@@ -294,7 +298,7 @@ export default function Home() {
     <div style={{'background':'#F6F8FB'}} className='tourheight'>
     <figure className='overflow-hidden'>
      
-{ elem.imageUrls[0] != null ?<img src={`storage/photos/${elem.imageUrls[0].image}`} className='w-100 imgscale rounded-1' alt="Tour Image" />:""}
+{ elem.imageUrls[0] != null ?<img src={`https://knm-travels.com/storage/photos/${elem.imageUrls[0].image}`} className='w-100 imgscale rounded-1' alt="Tour Image" />:""}
     </figure>
     <figcaption className='p-4' >
     <h4>{elem.name}</h4>
@@ -400,7 +404,7 @@ Standards</h2>
 <div className='col-lg-6'>
 <div>
   <h2>Hurghada</h2>
-  <p>Embarking on a journey in Hurghada promises a captivating blend of vibrant culture, mesmerizing landscapes, and the allure of the Red Sea's azure waters. As you step onto the golden shores, the warm Egyptian sun bathes everything in a golden glow, creating a surreal ambiance. Hurghada, renowned for its world-class diving and snorkeling sites, invites you to explore the breathtaking underwater world teeming with colorful coral reefs and exotic marine life. Whether you choose to unwind at luxurious resorts lining the coast, haggle for treasures in the bustling markets, or venture into the desert on a thrilling safari, each moment in Hurghada is infused with the rich tapestry of Egyptian history and hospitality. Be prepared to savor delectable local cuisine, witness vibrant traditional performances, and soak in the captivating charm of this Red Sea gem. A trip in Hurghada is not just a vacation; it's an immersive experience that leaves an indelible mark on the soul.</p>
+  <p>Embarking on a mesmerizing journey to Hurghada, my senses were captivated by the harmonious blend of cultural and recreational experiences. Our adventure commenced with a visit to the enchanting mosques and churches that stood as testaments to Egypt's rich history and diverse heritage. The spiritual aura of the mosques and the serenity within the churches provided a profound cultural immersion. Following this spiritual exploration, we delved into the vibrant Fish Ring, where the dazzling marine life unfolded before our eyes.The tour extended beyond four hours, ensuring ample time to absorb the beauty and significance of each site. Awaiting us was a well-organized bus, it will wait 30 mins . Our journey was enriched by the expertise of a knowledgeable tour guide who effortlessly navigated us through the cultural tapestry of Hurghada, adding insightful narratives to every landmark visited. To culminate this unforgettable day, we indulged in a spot of shopping, acquiring souvenirs that would forever encapsulate the magic of our expedition in Hurghada.</p>
   <Link to={'/tourform'}><button className='btn costume-btn text-white border-0 px-5 py-2 rounded-1'>Book Now <FontAwesomeIcon icon={faArrowRight} className='ms-2'/></button></Link>
 </div>
 </div>
@@ -429,23 +433,17 @@ the most beautiful beaches I have ever seen.”
           </div>
           <div className=' p-5 '>
             <p className='text-center fw-semibold reviewTest'>
-            “Customer service was professional. Highly recommend. Absolutely
-wonderful! Just the right amount of time spent snorkeling and one of
-the most beautiful beaches I have ever seen.”
+            “KNM Travel exceeded my expectations! Their attention to detail and personalized service made my trip unforgettable. Highly recommend!”
             </p>
           </div>
           <div className=' p-5 '>
             <p className='text-center fw-semibold reviewTest'>
-            “Customer service was professional. Highly recommend. Absolutely
-wonderful! Just the right amount of time spent snorkeling and one of
-the most beautiful beaches I have ever seen.”
+            “KNM Travel made my journey extraordinary! From impeccable planning to personalized service, every moment was unforgettable. Highly recommend for a seamless and delightful travel experience!”
             </p>
           </div>
           <div className=' p-5 '>
             <p className='text-center fw-semibold reviewTest'>
-            “Customer service was professional. Highly recommend. Absolutely
-wonderful! Just the right amount of time spent snorkeling and one of
-the most beautiful beaches I have ever seen.”
+            “Choosing KNM Travel was a game-changer for my vacation! Their meticulous planning and personal touch made the entire experience seamless and memorable.”
             </p>
           </div>
         </Slider>

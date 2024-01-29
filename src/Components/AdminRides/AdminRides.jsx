@@ -14,6 +14,7 @@ export default function AdminRides() {
   const [pagePrev, setPagePrev] = useState(null)
   const [currentPage, setCurrentPage] = useState(null)
   const [selectToDel, setSelectToDel] = useState(null)
+  let ww = $(window).width()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
   const delForm = useRef()
   const delForm2 = useRef()
@@ -84,7 +85,7 @@ export default function AdminRides() {
       <th scope="col">DestinationID</th>
       <th scope="col">From</th>
       <th scope="col">To</th>
-      <th scope="col">DateTime</th>
+      <th scope="col">Ride_Date</th>
       <th scope="col">Guest</th>
       <th scope="col">Phone</th>
       <th scope="col">Whatsapp</th>
@@ -110,9 +111,9 @@ export default function AdminRides() {
       <td>{elem.code}</td>
       
         <td>
-          <div className='text-center'>
-          <Link to={`/addRides/${elem.id}`} className='btn costume-btn text-black mb-2 border-0 px-4'>Edit</Link>
-          {localStorage.getItem('role') == 2?<button id={elem.id} onClick={openModal} type="button"  className='btn btn-danger border-0 px-4 mx-3'>Delete</button>:""}
+          <div className=' d-flex align-items-center'>
+          <Link to={`/addRides/${elem.id}`} className='btn costume-btn btn-sm text-black  border-0 me-2'>Edit</Link>
+          {localStorage.getItem('role') == 2?<button id={elem.id} onClick={openModal} type="button"  className='btn btn-sm btn-danger border-0 '>Delete</button>:""}
           </div>
         </td>
     </tr>
@@ -142,7 +143,7 @@ export default function AdminRides() {
 </form>
 </div>
 <nav aria-label="Page navigation example" className='d-flex  justify-content-center mt-3'>
-  <ul className="pagination">
+  <ul className={ww < 600?"pagination pagination-sm":"pagination"}>
   {pageNumber.map((elem, idx) => (
   <li key={idx} className="page-item" aria-label={elem.label}>
     

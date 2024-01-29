@@ -44,13 +44,7 @@ export default function RidePrices() {
         
   //     }
   
-  function submitRideForm(e) {
-    e.preventDefault()
 
-    localStorage.setItem("selectedDestinations",JSON.stringify({from:e.target.from.value,to:e.target.to.value}))
-    
-    navigate('/rideprices')
-  }
   // async function getDestination() {
   //   try {
   //     getDestination()
@@ -89,64 +83,54 @@ export default function RidePrices() {
   return <>
    {currentDestinations != null && currentDestinationCost != null?<div className='container pt-5 mt-5'  id='thechange'>
     
-   <div className='row'>
+   <div className='row p-4'>
                     <div className='d-flex'>
                         <div className='d-flex align-items-center text-white me-3 mb-2'>
-                        <i className="fa-regular fa-calendar me-2 " style={{'color':'#FFCC00'}}></i>
                         <FontAwesomeIcon icon={faCalendar} className='me-2' style={{'color':'#FFCC00'}}/>
-                        <span className='smallfont fw-semibold text-black'>Free cancellation</span>
+                        <span className='smallfont text-black fw-semibold'>Free cancellation</span>
                         </div>
                         <div className='d-flex align-items-center text-white mb-2'>
                         <FontAwesomeIcon icon={faHeadset} className='me-2' style={{'color':'#FFCC00'}}/>
-                        <span className='smallfont fw-semibold text-black'>24-hour support</span>
+                        <span className='smallfont text-black fw-semibold'>24-hour support</span>
                         </div>
                     </div>
             <div className='col-12 rounded-3 bg-white btn-select shadow py-3'>
-                <form className='row align-items-center justify-content-evenly ' onSubmit={submitRideForm}>
-                    <div className='col-md-3'>
-                    <div className='costumeborder2 pe-3'>
+                <div className='row align-items-center justify-content-evenly ' >
+                    <div className='col-md-4'>
+                    <div className='costumeborder2 px-3'>
                     <label htmlFor="pickup" className='fw-semibold'>Pickup</label>
-                    <select className='form-control' name="from">
-                      
-                      {destinations != null?destinations.map((elem,idx)=><option key={idx} value={elem.from}>{elem.from}</option>):""}
-
-                    </select>
+                    <input type="text" className='form-control' defaultValue={JSON.parse(localStorage.getItem('selectedDestinations')).from} readOnly/>
                     </div>
                     </div>
-                    <div className='col-md-1'>
+                    <div className='col-md-1 d-md-block d-none'>
                     <figure className='d-flex justify-content-center align-items-center pt-lg-3 pb-lg-2'>
                         <img src="./switch.svg" className='switch mt-3 mt-md-0'  alt="switch" />
                     </figure>
                     </div>
-                    <div className='col-md-3'>
+                    <div className='col-md-4 my-3'>
 <div className='costumeborder px-3'>
 <label htmlFor="dropoff" className='fw-semibold'>Dropoff</label>
-                               <select className='form-control' name="to">
-                                {destinations != null?destinations.map((elem,idx)=><option key={idx} value={elem.to}>{elem.to}</option>):""}
-                    </select>
+                               
+                        <input type="text" className='form-control' defaultValue={JSON.parse(localStorage.getItem('selectedDestinations')).to} readOnly/>
                     </div>
                     </div>
                     <div className='col-md-3'>
-                    <div className='costumeborder2 px-3'>
+                    <div className=' px-3'>
                     <label htmlFor="date_time" className='fw-semibold'>Date & Time</label>
                     <div>
-                    <input className='form-control border-0'
+                    <input className='form-control'
         type="datetime-local"
         id="futureDate"
         name="futureDate"
-        value={minDate}
-        onChange={handleDateChange}
-        min={minDate}
-      />
+        defaultValue={JSON.parse(localStorage.getItem('selectedDestinations')).dateTime}
+      readOnly/>
                     </div>
                     </div>
                     </div>
-                    <div className='col-md-2 mt-md-0 mt-3 d-flex justify-content-center'>
-                    <button type='submit' className='btn costume-btn text-white border-0 p-3 w-100'>Show Prices</button>
-                    </div>
+                    
                    
                     
-                </form>
+                </div>
             </div>
             <div className='d-flex justify-content-end pt-3'>
                         <div className='d-flex align-items-center text-white me-3 mb-2'>
@@ -187,16 +171,16 @@ export default function RidePrices() {
                     </div>
                     <div className='d-flex align-items-center'>
                     <FontAwesomeIcon icon={faClock} className='highlightingcolor me-2'/>
-                    <span className='fs-6 fw-semibold'>Estimated waiting time ...</span>
+                    <span className='fs-6 fw-semibold'>Waiting time 30min</span>
                     </div>
                 </div>
             </div>
             <div className='col-4 d-flex justify-content-center'>
-                   <div className='me-5 text-center'>
-                    {console.log(Number(currentDestinationCost))}
+                   <div className=' text-center'>
+                   
                     
                    <p className='fw-semibold fs-4'>{currencyBase.base == 'USD'?`$ ${Number(currentDestinationCost) * currencyBase.cost}`:`€ ${(Number(currentDestinationCost) * currencyBase.cost).toFixed(2)}`}</p>
-                     {JSON.parse(localStorage.getItem('selectedDestinations')).from != '' && JSON.parse(localStorage.getItem('selectedDestinations')).to != ''?<Link to={'/transferform'} className='btn btn-lg costume-btn text-white fw-semibold border-0 px-5 my-3 my-md-0 rounded-1'>Select</Link>:""} 
+                     {JSON.parse(localStorage.getItem('selectedDestinations')).from != '' && JSON.parse(localStorage.getItem('selectedDestinations')).to != ''?<Link to={'/transferform'} className='btn btn-lg costume-btn text-white fw-semibold border-0 px-5 mb-3 my-md-0 rounded-1'>Select</Link>:""} 
                 </div>
             </div>
         </div>

@@ -14,6 +14,7 @@ export default function AdminDestinations() {
   const [pagePrev, setPagePrev] = useState(null)
   const [currentPage, setCurrentPage] = useState(null)
   const [selectToDel, setSelectToDel] = useState(null)
+  let ww = $(window).width()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
   const navigate = useNavigate();
   
@@ -129,7 +130,7 @@ export default function AdminDestinations() {
 </form>
 </div>
 <nav aria-label="Page navigation example" className='d-flex justify-content-center mt-3'>
-  <ul className="pagination">
+  <ul className={ww < 600?"pagination pagination-sm":"pagination"}>
   {pageNumber.map((elem, idx) => (
   <li key={idx} className="page-item" aria-label={elem.label}>
     

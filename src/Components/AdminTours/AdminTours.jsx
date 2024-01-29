@@ -14,6 +14,7 @@ export default function AdminTours() {
   const [pagePrev, setPagePrev] = useState(null)
   const [currentPage, setCurrentPage] = useState(null)
   const [selectToDel, setSelectToDel] = useState(null)
+  let ww = $(window).width()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
   const navigate = useNavigate();
  //Modal control
@@ -87,7 +88,7 @@ export default function AdminTours() {
     <th scope="col">Plan</th>
     <th scope="col">Address</th>
     <th scope="col">Price</th>
-    <th scope="col">Period</th>
+    <th scope="col">Duration</th>
     <th scope="col">Booked</th>
     <th scope="col"><Link to={'/photos'} className='text-decoration-none text-black'>Photos <FontAwesomeIcon className="fa-solid fa-arrow-right highlightingcolor " icon={faArrowRight}/></Link></th>
     <th scope="col">Options</th>
@@ -108,7 +109,7 @@ export default function AdminTours() {
       {elem.imageUrls.map((img,idx)=><div className='col-6' key={idx}>
       <figure>
     
-        <img src={`http://127.0.0.1:8000/storage/photos/${img.image}`} className='w-100' alt="Tour Image" />
+        <img src={`https://knm-travels.com/storage/photos/${img.image}`} className='w-100' alt="Tour Image" />
       </figure>
       </div>)}
       </div></td>
@@ -145,7 +146,7 @@ export default function AdminTours() {
 </form>
 </div>
 <nav aria-label="Page navigation example" className='d-flex mt-3 justify-content-center'>
-<ul className="pagination">
+<ul className={ww < 600?"pagination pagination-sm":"pagination"}>
 
 {pageNumber.map((elem, idx) => (
 <li key={idx} className="page-item" aria-label={elem.label}>

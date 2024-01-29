@@ -65,13 +65,13 @@ export default function Profile() {
   
   return <>
   
-  <div className="container emp-profile pt-5 mt-5 " id='thechange'>
+  {userData.name != ""?<div className="container emp-profile pt-5 mt-5 " id='thechange'>
             
-                {userData != null?<div className="row align-items-center">
+                <div className="row align-items-center">
                 
                     <div className="col-md-4">
                        <form  method="post" onSubmit={uploadPhoto}> <div className="profile-img" encType='multipart/form-data'>
-                        {userData.profile_photo != null?<img src={`storage/${userData.profile_photo}`} className='w-100 rounded-circle' alt="profile image"/>:<img src={`./Default.jpg`} className='w-100 rounded-circle' alt="profile image"/>}
+                        {userData.profile_photo != null?<img src={`https://knm-travels.com/storage/${userData.profile_photo}`} className='w-100 rounded-circle' alt="profile image"/>:<img src={`./Default.jpg`} className='w-100 rounded-circle' alt="profile image"/>}
                             
                             <div className="file my-2 btn btn-lg btn-primary">
                                 Change Photo
@@ -130,7 +130,7 @@ export default function Profile() {
                         </form></div>
                     
                     
-                </div>:<div className='d-flex justify-content-center align-items-center vh-100'><BallTriangle 
+                </div></div>:<div className='d-flex justify-content-center align-items-center vh-100'><BallTriangle
   height={100}
   width={100}
   radius={5}
@@ -142,6 +142,6 @@ export default function Profile() {
 /></div>}
                 
                    
-        </div>
+        
   </>
 }

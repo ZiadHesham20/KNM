@@ -59,7 +59,7 @@ export default function AdminReviews() {
   return <>
   {reviews != null?<div className='container'>
     <div className='p-2 d-flex align-items-center justify-content-between'>
-    <h2 className='fw-bold'>Categories</h2>
+    <h2 className='fw-bold'>Reviews</h2>
     </div>
     <div className='tables'>
     <table className="table">

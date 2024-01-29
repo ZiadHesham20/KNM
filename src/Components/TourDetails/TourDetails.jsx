@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Await, Link, useNavigate, useParams } from 'react-router-dom';
 import $ from "jquery";
-import { faArrowRight, faCircleCheck, faClock, faLocationDot, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faCircleCheck, faClock, faLocationDot, faStar, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import { BallTriangle } from 'react-loader-spinner';
@@ -24,7 +24,7 @@ export default function TourDetails() {
   const [activeTab, setActiveTab] = useState('overview');
   const [reviews, setReviews] = useState(null)
  
-  
+  let ww = $(window).width()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
 
   let {id} = useParams()
@@ -77,7 +77,7 @@ export default function TourDetails() {
     try {
       let {data} = await axios.get('api/travels')
       // Get two random elements from the received data
-    const randomElements = getRandomElements(data.data, 2);
+    const randomElements = getRandomElements(data.data,2);
 
 
     
@@ -124,6 +124,7 @@ try {
     }
     return starArray
   }
+ 
    async function submitMyTravelForm(e) {
     e.preventDefault()
     //if (localStorage.getItem('auth_token') != null) {
@@ -141,15 +142,16 @@ try {
         $('.cardlayer').removeClass('d-none')
       }
         
-      ).then(
-        setTimeout(()=>{$('.cardlayer').addClass('d-none')},2000)
-      ) 
+      )
     // }else{
     //   navigate('/signin')
     // }
   }
+  function closeReceipt(){
+    $('.cardlayer').addClass('d-none')
+  }
   async function submitMyReview(e) {
-    e.preventDefault()
+    e.preventDefault();
   
     
     
@@ -174,7 +176,7 @@ try {
      
   }, [id])
   return <>
-  {tour != null && popTours != null?<div className='container py-5 px-4 px-md-0 mt-5 position-relative' id='thechange'>
+  {tour != null ?<div className='container py-5 px-4 px-md-0 mt-5 position-relative' id='thechange'>
     <div className='row position-relative'>
       <div className='col-lg-8'>
         <div>
@@ -192,12 +194,12 @@ try {
             <p className='fw-bold smallfont'>{tour.period} hours</p>
             </div>
           </div>
-          <div className='col-6 text-center text-md-start col-md-3 costumeborder3 d-flex justify-content-center'>
+          {tour.dateTime != null?<div className='col-6 text-center text-md-start col-md-3 costumeborder3 d-flex justify-content-center'>
            <div>
-           <span className='detaillabel smallfont'>Date & Time</span>
+           <span className='detaillabel smallfont'>Tour Date</span>
             <p className='fw-bold smallfont'>{tour.dateTime}</p>
            </div>
-          </div>
+          </div>:""}
           <div className='col-6 text-center text-md-start col-md-2'>
           <div>
           <span className='detaillabel smallfont'>Reviews</span>
@@ -214,18 +216,19 @@ try {
          </div>
          <div className='row justify-content-center mb-5'>
           <div className='col-12 mb-3'>
+          {/* https://knm-travels.com/storage/photos/6578b102ed0c7_Screenshot (85).png  --> image server path*/}
             <div>
-              <img src={`http://127.0.0.1:8000/storage/photos/${imageselected}`} alt='tourimages' className='w-100'/>
+              <img src={`https://knm-travels.com/storage/photos/${imageselected}`} alt='tourimages' className='w-100'/>
             </div>
           </div>
            {tour.imageUrls.map((elem,idx)=><div className='col-3 ' key={idx}> <div  style={{'cursor':'pointer'}} >
-            <img src={`http://127.0.0.1:8000/storage/photos/${elem.image}`} className='w-100 imagelist rounded-2 ' id={elem.image} onClick={getimage}/>
+            <img src={`https://knm-travels.com/storage/photos/${elem.image}`} className='w-100 imagelist rounded-2 ' id={elem.image} onClick={getimage}/>
             
           </div></div>)}
           
          </div>
          <div>
-      <ul className='list-unstyled d-flex justify-content-evenly'>
+      <ul className='list-unstyled d-flex justify-content-evenly ps-2 ps-md-0'>
         <li onClick={() => handleTabClick('overview')} className={activeTab === 'overview' ? 'active2 fw-semibold btn btn-primary border-white' : 'fw-semibold btn btn-outline-primary text-black rounded-1 notactive mx-2'}>Overview</li>
         <li onClick={() => handleTabClick('plan')} className={activeTab === 'plan' ? 'active2 fw-semibold btn btn-primary border-white px-4' : 'fw-semibold btn btn-outline-primary text-black rounded-1 notactive px-4 mx-2'}>Plan</li>
         <li onClick={() => handleTabClick('location')} className={activeTab === 'location' ? 'active2 fw-semibold btn btn-primary border-white' : 'fw-semibold btn btn-outline-primary text-black rounded-1 notactive mx-2'}>Location</li>
@@ -250,7 +253,7 @@ try {
      <p>{tour.plan}</p></div>}
       </div>
       <div className={activeTab === 'location' ? '' : 'd-none'}>
-        {activeTab === 'location' && <div className='p-3'><h5>Location</h5>
+        {activeTab === 'location' && <div className='my-3'><h3>Location</h3>
         <p><FontAwesomeIcon icon={faLocationDot}  className="highlightingcolor"/> {tour.address}</p></div>}
       </div>
       <div className={activeTab === 'reviews' ? '' : 'd-none'}>
@@ -368,22 +371,22 @@ try {
       </div>
     
     </div>
-    <hr className='w-75 m-auto my-3'/>
+    {popTours != null?<><hr className='w-75 m-auto my-3'/>
     <div className='row my-3 gy-3'>
       <h3 className='my-3'>You May Also Like</h3>
-      {popTours.map((elem,idx)=><div className="col-md-6 " key={idx}>
-    <div style={{'background':'#F6F8FB'}} className='tour'>
-    <figure>
-      
-      {/* <img src={elem.imageUrls[0].image} className='w-100 rounded-1' alt={elem.name} /> */}
-      {elem.imageUrls[0] != undefined?<img src={`http://127.0.0.1:8000/storage/photos/${elem.imageUrls[0].image}`} className='w-100 rounded-1' alt={elem.name} />:""}
+      {popTours.map((elem,idx)=><div key={idx} className="col-md-6 ">
+    <div style={{'background':'#F6F8FB'}} className='tourheight'>
+    <figure className='overflow-hidden'>
+     
+{ elem.imageUrls[0] != null ?<img src={`https://knm-travels.com/storage/photos/${elem.imageUrls[0].image}`} className='w-100 imgscale rounded-1' alt="Tour Image" />:""}
     </figure>
     <figcaption className='p-4' >
     <h4>{elem.name}</h4>
     <div className='my-3'>
-    <span className='me-4'><FontAwesomeIcon icon={faClock} className='text-warning'/> {elem.period} hours</span>
+    <span className='me-4'><FontAwesomeIcon icon={faClock} className='text-warning'/> 6 hours</span>
     
-    <FontAwesomeIcon icon={faStar} className='text-warning'/>
+                    {/* 541.19 */}
+                    <FontAwesomeIcon icon={faStar} className='text-warning'/>
                     <FontAwesomeIcon icon={faStar} className='text-warning'/>
                     <FontAwesomeIcon icon={faStar} className='text-warning'/>
                     <FontAwesomeIcon icon={faStar} className='text-warning'/>
@@ -392,10 +395,14 @@ try {
     </div>
     <div className='pt-3 aftercaption d-flex align-items-center justify-content-between'>
       <div className='pb-1'>
-      From <span className='highlightingcolor fw-semibold fs-5'>{currencyBase.base == 'USD'?`$ ${elem.cost * currencyBase.cost}`:`€ ${(elem.cost * currencyBase.cost).toFixed(2)}`}</span>
+      From {currencyBase.base === 'USD' ? (
+  <span className='highlightingcolor fw-semibold fs-5'>$ {elem.cost * currencyBase.cost}</span>
+) : currencyBase.base === 'EUR' ? (
+  <span className='highlightingcolor fw-semibold fs-5'>€ {(elem.cost * currencyBase.cost).toFixed(2)}</span>
+) : null}
       </div>
      <div>
-     <Link to={`/tourdetails/${elem.slug}`} className='text-black text-decoration-none linkhover'>More Information <FontAwesomeIcon className="fa-solid fa-arrow-right highlightingcolor pt-2" icon={faArrowRight}/></Link>
+     <Link to={`/tourdetails/${elem.slug}`} className='text-black text-decoration-none linkhover'>More Information <FontAwesomeIcon className="fa-solid fa-arrow-right highlightingcolor ms-2" icon={faArrowRight}/></Link>
      </div>
     </div>
     </figcaption>
@@ -405,7 +412,7 @@ try {
 
       }
   
-    </div>
+    </div></>:""}
         </div>
       </div>
       
@@ -419,33 +426,49 @@ try {
                 <div>
                 <label htmlFor="name" className='fw-semibold'>Name</label>
                 </div>
-                <input type="text" name='name' className='form-control my-3' placeholder='Enter name' required/>
+                <input type="text" name='name' className={`form-control ${ww <= 600?'form-control-sm':''} my-3`} placeholder='Enter name' required/>
               </div>
               <div className='d-flex justify-content-between'>
               <div>
                 <div>
                 <label htmlFor="phone" className='fw-semibold'>Phone</label>
                 </div>
-                <input type="number" name='phone' className='form-control my-3' min={"0"} placeholder='Enter Number' required/>
+                <input type="number" name='phone' className={`form-control ${ww <= 600?'form-control-sm':''} my-3`} min={"0"} placeholder='Enter Number' required/>
               </div>
               <div>
                 <div>
                 <label htmlFor="whatsappNumber" className='fw-semibold'>Whatsapp number</label>
                 </div>
-                <input type="number" name='whatsappNumber' className='form-control my-3' min={"0"} placeholder='Enter Number' required/>
+                <input type="number" name='whatsappNumber' className={`form-control ${ww <= 600?'form-control-sm':''} my-3`} min={"0"} placeholder='Enter Number' required/>
               </div>
+              </div>
+              <div className='d-flex justify-content-between align-items-center'>
+              <div>
+                <div>
+                <label htmlFor="count" className='fw-semibold'>Guest</label>
+                </div>
+                <input type="number" name='count' className={`form-control ${ww <= 600?'form-control-sm':''} my-3`} min={"1"} placeholder='Enter count'  required/>
+              </div>
+              <div>
+            <div>
+            <label htmlFor="currencycode" className='fw-semibold'>Currency</label>
+            </div>
+            {/* {ww <= 600? <h4 className='text-center w-75 hone fw-semibold'>Transfers from Hurghada to anywhere in Egypt</h4>:<h1 className='text-center w-75 hone fw-semibold '>Transfers from Hurghada to anywhere in Egypt</h1>} */}
+
+            <input className={`form-control ${ww <= 600?'form-control-sm':''} my-3`} name='code' type="text" id='currencycode' value={currencyBase.base} min={'0'} required/>
+            </div>
               </div>
               <div>
                 <div>
                 <label htmlFor="address" className='fw-semibold'>Address</label>
                 </div>
-                <input type="text" name='userAddress' className='form-control my-3' placeholder='Enter Address' required/>
+                <input type="text" name='userAddress' className={`form-control ${ww <= 600?'form-control-sm':''} my-3`} placeholder='Enter Address' required/>
               </div>
               <div>
                 <div>
-                <label htmlFor="date" className='fw-semibold'>Date & Time</label>
+                <label htmlFor="date" className='fw-semibold'>Booking Date</label>
                 </div>
-                <input className='form-control my-3'
+                <input className={`form-control ${ww <= 600?'form-control-sm':''} my-3`}
         type="datetime-local"
         id="futureDate"
         name="bookDate"
@@ -455,18 +478,7 @@ try {
         required
       />
               </div>
-              <div>
-                <div>
-                <label htmlFor="count" className='fw-semibold'>Count</label>
-                </div>
-                <input type="number" name='count' className='form-control my-3' min={"0"} placeholder='Enter count' required/>
-              </div>
-              <div>
-            <div>
-            <label htmlFor="currencycode" className='fw-semibold'>Currency</label>
-            </div>
-            <input className='form-control' name='code' type="text" id='currencycode' value={currencyBase.base} min={'0'} required/>
-            </div>
+              
               <hr className='w-100 my-4'/>
               <button type='submit' className='btn costume-btn text-white border-0 px-5 py-2 rounded-1 w-100'>Book Now <FontAwesomeIcon className='ms-2' icon={faArrowRight}/></button>
             </form>
@@ -474,16 +486,28 @@ try {
         </div>
       </div>
     </div>
-    <div className='position-fixed cardlayer d-none d-flex justify-content-center p-3 align-items-center top-0 bottom-0 end-0 start-0'>
+    <div className='position-fixed cardlayer d-none  d-flex justify-content-center p-3 align-items-center '>
     <div className="card p-3" >
+    <FontAwesomeIcon icon={faX} className='ms-auto pointer' onClick={closeReceipt}/>
   <div className="card-body text-center">
     <img src="/icons8-correct.svg" alt="correct" />
     <h5 className="card-title text-center">Your Tour have been booked successfully</h5>
   </div>
-  <hr className='w-100'/>
+  
+  
     {bookedTour != null? <div> 
-        <p className='fw-semibold'>Tour Name: {bookedTour.travel.name}</p> 
-        <p className='fw-semibold'>Price: {currencyBase.base == 'USD'?`$ ${bookedTour.cost * currencyBase.cost}`:`€ ${(bookedTour.cost * currencyBase.cost).toFixed(2)}`}</p>
+        <p className='fw-semibold'>Tour Name: <span className='fw-normal'>{bookedTour.travel.name}</span></p> 
+        <p className='fw-semibold'>User Name: <span className='fw-normal'>{bookedTour.name}</span></p> 
+        <p className='fw-semibold'>Phone: <span className='fw-normal'>{bookedTour.phoneNumber}</span></p> 
+        <p className='fw-semibold'>Whatsapp Number: <span className='fw-normal'>{bookedTour.whatsNumber}</span></p> 
+        <p className='fw-semibold'>Guest: <span className='fw-normal'>{bookedTour.count}</span></p> 
+        <p className='fw-semibold'>Booking Date: <span className='fw-normal'>{bookedTour.bookDate}</span></p> 
+        <p className='fw-semibold'>Address: <span className='fw-normal'>{bookedTour.address}</span></p> 
+        <hr className='w-100'/>
+        <div className='d-flex justify-content-between align-items-center'>
+        <p className='fw-semibold'>Total: <span className='fw-normal'>{currencyBase.base == 'USD'?`$ ${bookedTour.cost * currencyBase.cost}`:`€ ${(bookedTour.cost * currencyBase.cost).toFixed(2)}`}</span></p>
+        <p className='fw-semibold'>{bookedTour.code}</p> 
+        </div>
     </div>:""}
 
    

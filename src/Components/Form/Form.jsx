@@ -1,4 +1,4 @@
-import { faArrowAltCircleLeft, faCar, faCircleLeft, faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faArrowAltCircleLeft, faCar, faCircleLeft, faLocationDot, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect } from 'react'
 import $ from "jquery";
@@ -14,6 +14,7 @@ export default function Form() {
 
   let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
   const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
+  const [bookedRide, setBookedRide] = useState(null)
 
   const [currentDestinations, setCurrentDestinations] = useState([])
   const [loading, setLoading] = useState(true);
@@ -59,15 +60,16 @@ setLoading(false)
       code: e.target.currencycode.value,
       price: e.target.price.value
     }).then((res)=>{
+      setBookedRide(res.data.data)
       $('.cardlayer').removeClass('d-none')
     }
       
-    ).then(
-      setTimeout(()=>{$('.cardlayer').addClass('d-none')},2000)
-    ) 
+    )
     
   }
-  
+  function closeReceipt(){
+    $('.cardlayer').addClass('d-none')
+  }
 
 
   useEffect(() => {
@@ -123,19 +125,19 @@ setLoading(false)
             </div>
             <div>
             <div>
-            <label htmlFor="whatsappNumber" className='fw-semibold'>whatsapp Number</label>
+            <label htmlFor="whatsappNumber" className='fw-semibold'>Whatsapp Number</label>
             </div>
             <input className='form-control' name='whatsappNumber' type="number" id='whatsappNumber' min={0}/>
             </div>
             <div className='my-3'>
             <div>
-            <label htmlFor="date" className='fw-semibold'>Date & Time</label>
+            <label htmlFor="date" className='fw-semibold'>Ride Date</label>
             </div>
             <input className='form-control'
         type="datetime-local"
         id="futureDate"
         name="dateTime"
-        value={minDate}
+        defaultValue={JSON.parse(localStorage.getItem('selectedDestinations')).dateTime}
         onChange={handleDateChange}
         min={minDate}
       />
@@ -144,7 +146,7 @@ setLoading(false)
             <div>
             <label htmlFor="guest" className='fw-semibold'>Guest</label>
             </div>
-            <input className='form-control' type="number" name='guest' id='guest' min={0} max={3}/>
+            <input className='form-control' type="number" name='guest' id='guest' min={1} max={3}/>
             </div>
             <div>
             <div>
@@ -181,12 +183,33 @@ setLoading(false)
         </div>
       </div>
     </div>
-    <div className='position-fixed cardlayer d-none d-flex justify-content-center p-3 align-items-center top-0 bottom-0 end-0 start-0'>
+    <div className='position-fixed cardlayer d-none  d-flex justify-content-center p-3 align-items-center '>
     <div className="card p-3" >
+    <FontAwesomeIcon icon={faX} className='ms-auto pointer' onClick={closeReceipt}/>
   <div className="card-body text-center">
     <img src="/icons8-correct.svg" alt="correct" />
-    <h5 className="card-title text-center">Your Ride have been booked successfully</h5>
+    <h5 className="card-title text-center">Your Tour have been booked successfully</h5>
   </div>
+  
+  
+    {bookedRide != null? <div> 
+      {console.log(bookedRide)}
+      <p className='fw-semibold'>User Name: <span className='fw-normal'>{bookedRide.name}</span></p> 
+        <p className='fw-semibold'>From: <span className='fw-normal'>{bookedRide.from}</span></p> 
+        <p className='fw-semibold'>To: <span className='fw-normal'>{bookedRide.to}</span></p> 
+        <p className='fw-semibold'>Phone: <span className='fw-normal'>{bookedRide.phone}</span></p> 
+        <p className='fw-semibold'>Whatsapp Number: <span className='fw-normal'>{bookedRide.whatsNumber}</span></p> 
+        <p className='fw-semibold'>Guest: <span className='fw-normal'>{bookedRide.guest}</span></p> 
+        <p className='fw-semibold'>Ride Date: <span className='fw-normal'>{bookedRide.dateTime}</span></p> 
+        <hr className='w-100'/>
+        <div className='d-flex justify-content-between align-items-center'>
+        <p className='fw-semibold'>Total: <span className='fw-normal'>{currencyBase.base == 'USD'?`$ ${bookedRide.cost * currencyBase.cost}`:`€ ${(bookedRide.cost * currencyBase.cost).toFixed(2)}`}</span></p>
+        <p className='fw-semibold'>{bookedRide.code}</p> 
+        </div>
+    </div>:""}
+
+   
+ 
 </div>
     </div>
   </div>:<div className='container mt-5' id='thechange'>

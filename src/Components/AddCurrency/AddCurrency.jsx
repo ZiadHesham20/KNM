@@ -80,7 +80,7 @@ const [price, setprice] = useState(null)
             <div>
             <label htmlFor="price" className='fw-semibold'>Price</label>
             </div>
-            {currencyOld != null && id != undefined?<input className='form-control' type="number" id='price' value={currencyOld.price} onChange={(e)=>{setCurrencyOld({...currencyOld,price:e.target.value})}}/>:<input className='form-control' type="number" id='price' onChange={(e)=>{setprice(e.target.value)}}/>}
+            {currencyOld != null && id != undefined?<input className='form-control' type="number" id='price' step='any' value={currencyOld.price} onChange={(e)=>{setCurrencyOld({...currencyOld,price:e.target.value})}}/>:<input className='form-control' type="number" id='price' step='any' onChange={(e)=>{setprice(e.target.value)}}/>}
             </div>
             {id == undefined ?<button type="submit" className='btn costume-btn text-black border-0 px-4 my-3'>ADD</button>:<button type="submit" className='btn costume-btn text-black border-0 px-4 my-3'>Update</button>}
             <Link to={'/adminCurrency'} className='btn btn-danger border-0 px-4 mx-3'>Cancel</Link>

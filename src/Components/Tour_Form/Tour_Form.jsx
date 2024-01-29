@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import $ from "jquery";
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleLeft, faPersonWalkingLuggage } from '@fortawesome/free-solid-svg-icons';
+import { faCircleLeft, faPersonWalkingLuggage, faX } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { BallTriangle } from 'react-loader-spinner';
 
@@ -13,6 +13,7 @@ export default function Tour_Form() {
 
   const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
   const [tripCost, setTripCost] = useState(null)
+  const [bookedTrip, setBookedTrip] = useState(null)
   
   const currentDate = new Date();
   // const header = `Bearer ${localStorage.getItem('auth_token')}`;
@@ -42,12 +43,15 @@ export default function Tour_Form() {
       code:e.target.currencycode.value
 
     }).then((res)=>{
+     
+      setBookedTrip(res.data.data);
       $('.cardlayer').removeClass('d-none')
     }
       
-    ).then(
-      setTimeout(()=>{$('.cardlayer').addClass('d-none')},2000)
-    ) 
+    )
+  }
+  function closeReceipt(){
+    $('.cardlayer').addClass('d-none')
   }
   async function tripPrice() {
     try {
@@ -76,7 +80,7 @@ export default function Tour_Form() {
      tripPrice()
   }, [])
   return <>
-  {tripCost != null?<div className='container mt-5' id='thechange'>
+  <div className='container mt-5' id='thechange'>
     <div className='row my-5 pt-5 gy-3'>
       <div className='col-lg-8'>
         <div className='d-flex align-items-center'>
@@ -105,7 +109,7 @@ export default function Tour_Form() {
             </div>
             <div>
             <div>
-            <label htmlFor="futureDate" className='fw-semibold'>Date & Time</label>
+            <label htmlFor="futureDate" className='fw-semibold'>Trip Date</label>
             </div>
             <input className='form-control'
         type="datetime-local"
@@ -120,7 +124,7 @@ export default function Tour_Form() {
             <div>
             <label htmlFor="guest" className='fw-semibold'>Guest</label>
             </div>
-            <input className='form-control' type="number" name='guest' id='guest' min={0} max={3} required/>
+            <input className='form-control' type="number" name='guest' id='guest' min={1} max={12} required/>
             </div>
             <div>
             <div>
@@ -128,7 +132,9 @@ export default function Tour_Form() {
             </div>
             <input className='form-control normalCursor' name='currencycode' type="text" id='currencycode' value={currencyBase.base} min={'0'} readOnly />
             </div>
-            <button type="submit" className='btn costume-btn text-black border-0 px-4 my-3'>Confirm Trip</button>
+            
+            {tripCost != null? <button type="submit"  className='btn costume-btn text-black border-0 px-4 my-3'>Confirm Trip</button>
+:<button type="submit" disabled className='btn costume-btn text-black border-0 px-4 my-3'>Confirm Trip</button>}
           </form>
         </div>
       </div>
@@ -138,35 +144,41 @@ export default function Tour_Form() {
           <h4><FontAwesomeIcon icon={faPersonWalkingLuggage}  className="me-2 fa-2x"/>Trip In Hurghada</h4>
           </div>
           <div className='p-4 maincolor rounded-3 d-flex align-items-center justify-content-between'>
-            <h5>Total </h5>
-            <h5 className='fw-bold'>{currencyBase.base == 'USD'?`$ ${tripCost.cost * currencyBase.cost}`:`€ ${(tripCost.cost * currencyBase.cost).toFixed(2)}`}</h5>
+           
+            {tripCost != null? <><h5>Total </h5><h5 className='fw-bold'>{currencyBase.base == 'USD'?`$ ${tripCost.cost * currencyBase.cost}`:`€ ${(tripCost.cost * currencyBase.cost).toFixed(2)}`}</h5>
+</>:<h5>Price is not set yet </h5>}
           </div>
         </div>
       </div>
     </div>
-    <div className='position-fixed cardlayer d-none d-flex justify-content-center p-3 align-items-center top-0 bottom-0 end-0 start-0'>
+    <div className='position-fixed cardlayer d-none  d-flex justify-content-center p-3 align-items-center '>
     <div className="card p-3" >
+    <FontAwesomeIcon icon={faX} className='ms-auto pointer' onClick={closeReceipt}/>
   <div className="card-body text-center">
     <img src="/icons8-correct.svg" alt="correct" />
-    <h5 className="card-title text-center">Your Trip In Hurghada have been booked successfully</h5>
+    <h5 className="card-title text-center">Your Tour have been booked successfully</h5>
   </div>
- 
+  
+  
+    {bookedTrip != null? <div> 
+      {console.log(bookedTrip)}
+        <p className='fw-semibold'>User Name: <span className='fw-normal'>{bookedTrip.name}</span></p> 
+        
+        <p className='fw-semibold'>Phone: <span className='fw-normal'>{bookedTrip.phoneNumber}</span></p> 
+        <p className='fw-semibold'>Whatsapp Number: <span className='fw-normal'>{bookedTrip.whatsNumber}</span></p> 
+        <p className='fw-semibold'>Guest: <span className='fw-normal'>{bookedTrip.guest}</span></p> 
+        <p className='fw-semibold'>Trip Date: <span className='fw-normal'>{bookedTrip.dateTime}</span></p> 
+        <hr className='w-100'/>
+        <div className='d-flex justify-content-between align-items-center'>
+        <p className='fw-semibold'>Total: <span className='fw-normal'>{currencyBase.base == 'USD'?`$ ${bookedTrip.cost * currencyBase.cost}`:`€ ${(bookedTrip.cost * currencyBase.cost).toFixed(2)}`}</span></p>
+        <p className='fw-semibold'>{bookedTrip.code}</p> 
+        </div>
+    </div>:""}
 
    
  
 </div>
     </div>
-  </div>:<div className='vh-100  d-flex justify-content-center'>
-  <div className=' position-fixed loading ' id='thechange'><BallTriangle 
-  height={100}
-  width={100}
-  radius={5}
-  color="#FECD27"
-  ariaLabel="ball-triangle-loading"
-  wrapperClass={{}}
-  wrapperStyle=""
-  visible={true}
-/></div>
-    </div>}
+  </div>
   </>
 }

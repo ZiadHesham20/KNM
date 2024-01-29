@@ -50,7 +50,7 @@ export default function Admin({dashboard}) {
         <ul className="navbar-nav me-auto mb-2 mb-lg-0 d-flex justify-content-end w-100">
           <li className="nav-item d-flex align-items-center">
           <FontAwesomeIcon icon={faUserTie} className='fa-1x border-2 p-2 border-black border rounded-circle me-3'/>
-            <h6>{userData.name}</h6>
+            <h6 className='pt-2'>{userData.name}</h6>
           </li>
           
         </ul>

@@ -61,7 +61,7 @@ export default function Photos() {
     <td><div className='row'>
       {elem.imageUrls.map((img,idx)=><div className='col-md-3' key={idx}>
       <figure className='position-relative'>
-        <img src={`http://127.0.0.1:8000/storage/photos/${img.image}`} className='w-100 rounded-2' alt="Tour Image" />
+        <img src={`https://knm-travels.com/storage/photos/${img.image}`} className='w-100 rounded-2' alt="Tour Image" />
         <div className='deleteImage pointer' >
         <img src="/delete_svgrepo.com.svg" className='w-100' id={img.id} alt="Delete Icon" onClick={deleteImage}/>
         </div>

@@ -132,7 +132,7 @@ useEffect(() => {
         {localStorage.getItem('auth_token') != null?<div style={{width:"100%"}} className='me-2 d-flex align-items-center d-md-none'><Link className='text-center' to={'/profile'}><img src="/Default.jpg" className='w-25 rounded-circle' /></Link></div>:""}
           <ul className="navbar-nav text-center justify-content-center flex-grow-1 ">
           <li className="nav-item me-2">
-            {current_path.pathname == '/' || current_path.pathname == '/home'?<Link className="nav-link navele  navtext navlink-border fw-bold " id='home' onClick={active} aria-current="page" to='/home'>Home</Link>:<Link className="nav-link navele  fw-bold " id='home' onClick={active} aria-current="page" to='/home'>Home</Link>}
+            {current_path.pathname == '/' || current_path.pathname == '/home'?<Link className="nav-link navele  navtext navlink-border fw-bold " id='home' onClick={active} aria-current="page" to='/home'>Home</Link>:<Link className="nav-link text-black navele  fw-bold " id='home' onClick={active} aria-current="page" to='/home'>Home</Link>}
           </li>
           <li className="nav-item me-2">
 {current_path.pathname == '/tours'?<Link className="nav-link navele navtext navlink-border fw-bold navtext" aria-current="page" id='tours' onClick={active} to="/tours">Tours</Link>
@@ -150,7 +150,7 @@ useEffect(() => {
             <Link className="nav-link navele  fw-bold navtext" aria-current="page" id='dashboard' onClick={active} to="/admin">Dashboard</Link>
           </li>:""}
           </ul>
-          {localStorage.getItem('auth_token') != null?<div  className='smallProfile me-2 d-flex align-items-center d-none d-md-flex'><Link to={'/profile'}>{userImage != null?<img src={`storage/${userImage}`} className='w-100 rounded-circle' />:<img src="/Default.jpg" className='w-100 rounded-circle' />}</Link></div>:""}
+          {localStorage.getItem('auth_token') != null?<div  className='smallProfile me-2 d-flex align-items-center d-none d-md-flex'><Link to={'/profile'}>{userImage != null?<img src={`https://knm-travels.com/storage/${userImage}`} className='w-100 rounded-circle' />:<img src="/Default.jpg" className='w-100 rounded-circle' />}</Link></div>:""}
           <div className="dropdown me-2">
   
   <select className='btn btn-outline-light px-4 currencylist btn-select text-black' id='currencychange' >

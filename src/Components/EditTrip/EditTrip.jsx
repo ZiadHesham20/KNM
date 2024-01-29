@@ -51,7 +51,7 @@ export default function EditTrip() {
         phone:phone
       };
 
-      await axios.post('api/trips',formData,{ headers: {Authorization: header} })
+      await axios.post('api/trips',formData)
     navigate('/adminTrip')
     }
     //update
@@ -101,7 +101,7 @@ console.log(tripOld);
             </div>
             <div>
             <div>
-            <label htmlFor="dateTime" className='fw-semibold'>DateTime</label>
+            <label htmlFor="dateTime" className='fw-semibold'>Trip Date</label>
             </div>
                   {tripOld != null && id != undefined?<input className='form-control'
         type="datetime-local"
@@ -144,7 +144,7 @@ console.log(tripOld);
             
 {tripOld != null && id != undefined ?
   <select
-    className='btn btn-outline-light px-4 currencylist btn-select text-black'
+    className='btn btn-outline-light px-4 currencylist bg-white btn-select text-black'
     defaultValue={tripOld.code}
     id='currencychange'
     onChange={(e) => { setTripOld({...tripOld,code:e.target.value}) }}
@@ -156,14 +156,17 @@ console.log(tripOld);
     ))}
   </select>
   :
-  <select
-    className='btn btn-outline-light px-4 currencylist btn-select text-black'
+  <select required
+    className='btn btn-outline-light px-4 currencylist btn-select bg-white text-black'
     id='currencychange'
-    onChange={(e) => { setCode(e.target.value) }}
+    onChange={(e) => { console.log(e.target.value)
+      setCode(e.target.value) }}
   >
-    {currency.map((elem, idx) => (
-      <option key={idx} className='text-center text-black pointer' value={elem.id} data-cost={elem.cost}>{elem.code}</option>
-    ))}
+         <option className='text-center text-black pointer'></option>
+    {currency.map((elem, idx) => 
+      <option key={idx} className='text-center text-black pointer' value={elem.code} data-cost={elem.cost}>{elem.code}</option>
+    
+    )}
   </select>
 }
             </div>

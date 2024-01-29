@@ -80,11 +80,12 @@ getTours()
     </div>
     <div className='row gy-3'>
        {tours != null ?tours.map((elem,idx)=> <div className='col-md-3' key={idx}>
+            <Link to={`/tourdetails/${elem.slug}`} className='text-decoration-none'>
             <div>
             <div className='container '>
           <div className='position-relative d-flex imghi '>
             <figure className='position-absolute  top-0 bottom-0'>
-            <img src={elem.imageUrls[0] != null?`storage/photos/${elem.imageUrls[0].image}`:""} className='w-100 imghi rounded-1' alt="Tour Image" />
+            <img src={elem.imageUrls[0] != null?`https://knm-travels.com/storage/photos/${elem.imageUrls[0].image}`:"/default-image-icon-missing-picture-page-vector-40546530.jpg"} className='w-100 imghi rounded-1 text-black' alt="Tour Image" />
             </figure>
             
             <div className='container rounded-1 slideslayer z-1'>
@@ -116,7 +117,7 @@ getTours()
                     5/5
                     </div>
                     </div>
-                    <Link className='btn btn-outline-primary border-white m w-75 text-white d-flex align-items-center justify-content-center' to={`/tourdetails/${elem.slug}`}>More Information<FontAwesomeIcon icon={faArrowRight} className='ms-2'/></Link>
+                    <button className='btn btn-outline-primary border-white m w-75 text-white d-flex align-items-center justify-content-center' >More Information<FontAwesomeIcon icon={faArrowRight} className='ms-2'/></button>
                 </div>
                 
             </div>
@@ -124,6 +125,7 @@ getTours()
           </div>
           </div>
             </div>
+            </Link>
          </div>):""}
     </div>
   </section>

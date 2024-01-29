@@ -2,7 +2,16 @@
   font-family: mainFont;
   src: url('../public/static/Jost-VariableFont_wght.ttf');
 }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"] {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
 
 body {
   margin: 0;
@@ -425,7 +434,7 @@ box-shadow: 0 0 0 0.1rem #FECD27 !important;
 }
 .rate:not(:checked) > input {
   position:absolute;
-  top:0px;
+
   opacity: 0;
 }
 .rate:not(:checked) > label {
@@ -501,6 +510,10 @@ box-shadow: 0 0 0 0.1rem #FECD27 !important;
 .cardlayer{
   background-color: rgba(0, 0, 0,0.5);
   transition: all 0.3s;
+  top: 5%;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 

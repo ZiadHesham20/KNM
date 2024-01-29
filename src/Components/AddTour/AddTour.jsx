@@ -69,7 +69,8 @@ async function getCategory(){
       }
 console.log(category);
       try {
-        await axios.post(`api/travels?name=${name}&category_id=${selectedCategory}&description=${description}&plan=${plan}&address=${addrss}&price=${price}&dateTime=${dateTime}&period=${period}`,formData,{ headers: { Authorization: header } })
+        console.log(dateTime);
+        await axios.post(`api/travels?name=${name}&category_id=${selectedCategory}&description=${description}&plan=${plan}&address=${addrss}&price=${price}${dateTime != null?`&dateTime=${dateTime}&`:'&'}period=${period}`,formData,{ headers: { Authorization: header } })
         navigate('/adminTours')
       } catch (error) {
         setAllErrors(error)
@@ -125,7 +126,7 @@ console.log(category);
   };
   return <>
   
-  {tourOld != null ?<div className='container'>
+  {tourOld != null && category != null?<div className='container'>
   {id == undefined ?<h2 className='fw-bold'>Add Tour</h2>:<h2 className='fw-bold'>Edit Tour</h2>}
   <div>
   <form className='py-3' encType='multipart/form-data' onSubmit={submitMyform}>
@@ -140,10 +141,11 @@ console.log(category);
             <label htmlFor="category" className='fw-semibold'>Category</label>
             </div>
             {/* {tourOld != null && id != undefined?<input className='form-control' type="text" id='category' value={tourOld.category_id} onChange={(e)=>{setTourOld({...tourOld,category_id:e.target.value})}}/>:<input className='form-control' type="text" id='category'  onChange={(e)=>{setCategory(e.target.value)}} required/>} */}
-            <select className="form-select text-center" onChange={(e)=>{setselectedCategory(e.target.value)}} aria-label="Default select example">
+            <select name='selectedCategory' defaultValue={tourOld.category_id} className="form-select text-center" onChange={(e)=>{setselectedCategory(e.target.value)}} aria-label="Default select example">
   <option className='text-center'></option>
-  {category != null? category.map((elem,idx)=><option key={idx} className='text-center' value={elem.id}>{elem.slug}</option>):""}
+   {category.map((elem,idx)=><option key={idx} className='text-center' value={elem.id}>{elem.slug}</option>)}
 </select>
+
             </div>
             <div>
             <div>
@@ -159,10 +161,11 @@ console.log(category);
             </div>
             <div>
             <div>
-            <label htmlFor="period" className='fw-semibold'>Period</label>
+            <label htmlFor="period" className='fw-semibold'>Duration</label>
             </div>
             {tourOld != null && id != undefined?<input className='form-control' type="number" id='period' value={tourOld.period} onChange={(e)=>{setTourOld({...tourOld,period:e.target.value})}}/>:<input className='form-control' type="number" id='period' onChange={(e)=>{setPeriod(e.target.value)}} required/>}
             </div>
+            {console.log(tourOld)}
             <div>
             <div>
             <label htmlFor="photos" className='fw-semibold'>Photos</label>
@@ -174,14 +177,14 @@ console.log(category);
           </div>:""}
             <div>
             <div>
-            <label htmlFor="dateTime" className='fw-semibold'>DateTime</label>
+            <label htmlFor="dateTime" className='fw-semibold'>Tour Date</label>
             </div>
             {tourOld != null && id != undefined?<input className='form-control'
         type="datetime-local"
         id="futureDate"
         name="futureDate"
         
-        value={moment(tourOld.bookDate).toString}
+        value={tourOld.dateTime}
         onChange={handleDateChange}
         min={minDate}
       />:<input className='form-control'
@@ -212,8 +215,8 @@ console.log(category);
             <h6>This Tour Already exists</h6>
           </div>:""}
   </div>
-  </div>:<div className='vh-100 '>
-  <div className=' position-fixed loading ' id='thechange'><BallTriangle
+  </div>:<div className='vh-100 d-flex justify-content-center'>
+  <div className=' position-fixed loading' id='thechange'><BallTriangle
   height={100}
   width={100}
   radius={5}

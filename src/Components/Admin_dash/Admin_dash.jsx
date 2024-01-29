@@ -11,6 +11,7 @@ export default function Admin_dash() {
     const [rides, setRides] = useState(null)
     const [tours, setTours] = useState(null)
     const [trips, setTrips] = useState(null)
+    const [reviews, setReviews] = useState(null)
     const header = `Bearer ${localStorage.getItem('auth_token')}`;
     const navigate = useNavigate();
     async function getTrav() {
@@ -26,7 +27,8 @@ export default function Admin_dash() {
       async function getCurrencies(){
         try {
           let {data} = await axios.get('api/currencies')
-        setCurrencies(Array(data.data));
+       
+        setCurrencies(data.data);
         } catch (error) {
           if (error.code == 'ERR_NETWORK') {
             navigate('/503')
@@ -83,6 +85,17 @@ export default function Admin_dash() {
           }
         }
       }
+      async function getReviews(){
+        try {
+          let {data} = await axios.get('api/reviews',{ headers: { Authorization: header } })
+          
+        setReviews(data.meta.total)
+        } catch (error) {
+          if (error.code == 'ERR_NETWORK') {
+            navigate('/503')
+          }
+        }
+      }
       useEffect(() => {
         getTrav()
         getCurrencies()
@@ -91,6 +104,7 @@ export default function Admin_dash() {
         getTours()
         getTrips()
         getUsers()
+        getReviews()
       }, [])
       
   return <>
@@ -119,7 +133,7 @@ export default function Admin_dash() {
         </div>
         <div className='col-md-4'>
             <div className='d-flex justify-content-between maincolor p-5 rounded-3'>
-            <h4>Travels</h4>
+            <h4>Booked Tours</h4>
             <h4>{travels}</h4>
             </div>
         </div>
@@ -139,6 +153,12 @@ export default function Admin_dash() {
             <div className='d-flex justify-content-between maincolor p-5 rounded-3'>
             <h4>Users</h4>
             <h4>{users}</h4>
+            </div>
+        </div>
+        <div className='col-md-4'>
+            <div className='d-flex justify-content-between maincolor p-5 rounded-3'>
+            <h4>Reviews</h4>
+            <h4>{reviews}</h4>
             </div>
         </div>
     </div>

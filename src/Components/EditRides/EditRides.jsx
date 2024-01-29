@@ -7,9 +7,10 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 export default function EditRides() {
   const [rideOld,setRideOld] = useState({destination_id:"",from:"",to:"",name:"",dateTime:"",guest:"",phoneNumber:"",whatsNumber:"",code:""})
-
+  const [destinations,setDestinations] = useState(null)
   const [destination_Id,setDestination_Id] = useState(null)
   const [toD,setToD] = useState(null)
+  const [currency, setCurrency] = useState(null)
   const [code,setCode] = useState(null)
   const [fromD,setFromD] = useState(null)
   const [name,setName] = useState(null)
@@ -19,6 +20,18 @@ export default function EditRides() {
   const {id} = useParams()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
   const navigate = useNavigate();
+
+  async function getDestinations() {
+    try {
+      let { data } = await axios.get(`api/destinations`)
+    console.log(data.data);
+    setDestinations(data.data)
+    } catch (error) {
+      if (error.code == 'ERR_NETWORK') {
+        navigate('/503')
+      }
+    }
+  }
 
   async function getTourDetails() {    
     try {
@@ -30,6 +43,15 @@ export default function EditRides() {
       if (error.code == 'ERR_NETWORK') {
         navigate('/503')
       }
+    }
+  }
+  async function getCurrencies(){
+    try {
+      let {data} = await axios.get('api/currencies')
+    setCurrency(data.data)
+  
+    } catch (error) {
+      console.log(error.code);
     }
   }
   async function submitMyform(e) {
@@ -45,8 +67,11 @@ export default function EditRides() {
     }
   }
   useEffect(() => {
+    getDestinations()
+    getCurrencies()
     if (id != undefined) {
       getTourDetails()
+      
     }
   }, [])
 
@@ -67,15 +92,22 @@ export default function EditRides() {
     setMinDate(event.target.value);
   };
   return <>
-  {rideOld != null?<div className='container'>
+  {rideOld != null && destinations != null && currency != null?<div className='container'>
   {id == undefined ?<h2 className='fw-bold'>Add Ride</h2>:<h2 className='fw-bold'>Edit Ride</h2>}
   <div>
   <form className='py-3' encType='multipart/form-data' onSubmit={submitMyform}>
   <div>
             <div>
-            <label htmlFor="destinationId" className='fw-semibold'>DestinationId</label>
+            <label htmlFor="destinationId" className='fw-semibold'>Destination</label>
             </div>
-            {rideOld != null && id != undefined ?<input className='form-control' type="number" id='destinationId' name='destinationId' value={rideOld.destination_id} onChange={(e)=>{setRideOld({...rideOld,destination_id:e.target.value})}}/>:<input className='form-control' type="text" name='destinationId' onChange={(e)=>{setDestination_Id(e.target.value)}} required/>}
+            {id != undefined && destinations != null && rideOld != null?<select name="destinations" id='destinationId' value={rideOld.destination_id} className='form-select' onChange={(e)=>{setRideOld({...rideOld,destination_id:e.target.value})}}>
+              {destinations.map((elem,idx)=><option key={idx} value={elem.id}>{`${elem.from} ---> ${elem.to}`}</option>)}
+            </select>:<select name="destinations" id='destinationId' className='form-select' onChange={(e)=>{
+              console.log(e.target.value);
+              setDestination_Id(e.target.value)}}>
+              <option></option>
+              {destinations.map((elem,idx)=><option key={idx} value={elem.id}>{`${elem.from} ---> ${elem.to}`}</option>)}
+            </select>}
             </div>
             <div>
             <div>
@@ -87,18 +119,28 @@ export default function EditRides() {
             <div>
             <label htmlFor="from" className='fw-semibold'>From</label>
             </div>
-            {rideOld != null && id != undefined?<input className='form-control' type="text" name='from' id='from' value={rideOld.from} onChange={(e)=>{setRideOld({...rideOld,from:e.target.value})}}/>:<input onChange={(e)=>{setFromD(e.target.value)}} className='form-control' type="text" name='from' id='from' required/>}
+            {id != undefined && destinations != null && rideOld != null?<select disabled onChange={(e)=>{setRideOld({...rideOld,from:e.target.value})}} name="from" id='from' value={rideOld.from} className='form-select'>
+              {destinations.map((elem,idx)=><option key={idx} value={elem.from}>{elem.from}</option>)}
+            </select>:<select onChange={(e)=>{setFromD(e.target.value)}} name="from" id='from' className='form-select'>
+              <option></option>
+              {destinations.map((elem,idx)=><option key={idx} value={elem.from}>{elem.from}</option>)}
+            </select>}
             </div>
             <div>
             <div>
             <label htmlFor="to" className='fw-semibold'>To</label>
             </div>
         
-            {rideOld != null && id != undefined?<input className='form-control' type="text" id='to' name='to' value={rideOld.to} onChange={(e)=>{setRideOld({...rideOld,to:e.target.value})}}/>:<input onChange={(e)=>{setToD(e.target.value)}} className='form-control' name='to' type="text" id='to'  required/>}
+            {id != undefined && destinations != null && rideOld != null?<select disabled onChange={(e)=>{setRideOld({...rideOld,to:e.target.value})}} name="to" id='to' value={rideOld.to} className='form-select'>
+              {destinations.map((elem,idx)=><option key={idx} value={elem.to}>{elem.to}</option>)}
+            </select>:<select onChange={(e)=>{setToD(e.target.value)}} name="to" id='to' className='form-select'>
+              <option></option>
+              {destinations.map((elem,idx)=><option key={idx} value={elem.to}>{elem.to}</option>)}
+            </select>}
             </div>
             <div>
             <div>
-            <label htmlFor="dateTime" className='fw-semibold'>DateTime</label>
+            <label htmlFor="dateTime" className='fw-semibold'>Ride Date</label>
             </div>
             {rideOld != null && id != undefined?<input className='form-control'
         type="datetime-local"
@@ -140,14 +182,45 @@ export default function EditRides() {
             <div>
             <label htmlFor="code" className='fw-semibold'>Currency</label>
             </div>
-            {rideOld != null && id != undefined?<input className='form-control' type="text" name='code' id='code' value={rideOld.code} onChange={(e)=>{setRideOld({...rideOld,code:e.target.value})}}/>:<input onChange={(e)=>{setCode(e.target.value)}} className='form-control' type="text" name='code' id='code' required/>}
+            {/* {rideOld != null && id != undefined?<input className='form-control' type="text" name='code' id='code' value={rideOld.code} onChange={(e)=>{setRideOld({...rideOld,code:e.target.value})}}/>:<input onChange={(e)=>{setCode(e.target.value)}} className='form-control' type="text" name='code' id='code' required/>} */}
+            
+            { id != undefined ?
+            
+  <select
+    className='btn btn-outline-light px-4 currencylist bg-white btn-select text-black'
+    value={rideOld.code}
+    id='code'
+    name='code'
+    onChange={(e)=>{setRideOld({...rideOld,code:e.target.value})}}
+    
+  >
+   
+    {currency.map((elem, idx) => (
+      <option key={idx} className='text-center text-black pointer' value={elem.code}>{elem.code}</option>
+    ))}
+  </select>
+  :
+  <select required
+    className='btn btn-outline-light px-4 currencylist btn-select bg-white text-black'
+    id='code'
+    name='code'
+    onChange={(e) => { console.log(e.target.value)
+      setCode(e.target.value) }}
+  >
+         <option className='text-center text-black pointer'></option>
+    {currency.map((elem, idx) => 
+      <option key={idx} className='text-center text-black pointer' value={elem.code} data-cost={elem.cost}>{elem.code}</option>
+    
+    )}
+  </select>
+}
             </div>
           
             
             {id != null?<button type="submit" className='btn costume-btn text-black border-0 px-4 my-3'>Update</button>:<button type="submit" className='btn costume-btn text-black border-0 px-4 my-3'>Add</button>}
           </form>
   </div>
-  </div>:<div className='vh-100 '>
+  </div>:<div className='vh-100 d-flex justify-content-center'>
   <div className=' position-fixed loading ' id='thechange'><BallTriangle
   height={100}
   width={100}

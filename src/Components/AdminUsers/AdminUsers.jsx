@@ -14,6 +14,7 @@ export default function AdminUsers() {
   const [pagePrev, setPagePrev] = useState(null)
   const [currentPage, setCurrentPage] = useState(null)
   const [selectToDel, setSelectToDel] = useState(null)
+  let ww = $(window).width()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
   const navigate = useNavigate();
  //Modal control
@@ -49,8 +50,8 @@ export default function AdminUsers() {
     setPagePrev(data.links.prev)
     setPageNumber(data.meta.links)
     setCurrentPage(data.meta.current_page)
-    
-    setUsers(data.data);
+
+    setUsers(data.data.filter(elem => elem.id != localStorage.getItem('user_id')));
     } catch (error) {
       if (error.code == 'ERR_NETWORK') {
         navigate('/503')
@@ -84,6 +85,7 @@ export default function AdminUsers() {
       <th scope="col">Name</th>
       <th scope="col">Email</th>
       <th scope="col">Address</th>
+      <th scope="col">Role</th>
       {localStorage.getItem('role') == 2?<th scope="col" className='text-center'>Options</th>:""}
     </tr>
   </thead>
@@ -93,6 +95,8 @@ export default function AdminUsers() {
       <td>{elem.name}</td>
       <td>{elem.email}</td>
       <td>{elem.address}</td>
+      
+      {elem.role == 0?<td>User</td>:elem.role == 1?<td>Admin</td>:<td>SuperAdmin</td>}
         <td>
           <div className='d-flex align-items-end justify-content-center'>
             {localStorage.getItem('role') == 2?<Link to={`/editUser/${elem.id}`} className='btn costume-btn text-black border-0 px-4'>Edit</Link>:""}
@@ -107,7 +111,7 @@ export default function AdminUsers() {
 </table>
 
 <nav aria-label="Page navigation example" className=' d-flex justify-content-center'>
-  <ul className="pagination">
+  <ul className={ww < 600?"pagination pagination-sm":"pagination"}>
   {pageNumber.map((elem, idx) => (
   <li key={idx} className="page-item" aria-label={elem.label}>
     

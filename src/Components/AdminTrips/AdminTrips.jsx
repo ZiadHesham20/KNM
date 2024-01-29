@@ -14,6 +14,7 @@ export default function AdminTrips() {
   const [pagePrev, setPagePrev] = useState(null)
   const [currentPage, setCurrentPage] = useState(null)
   const [selectToDel, setSelectToDel] = useState(null)
+  let ww = $(window).width()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
   const navigate = useNavigate();
   //Modal control
@@ -86,11 +87,11 @@ let {id} = useParams()
     <th scope="col">UserName</th>
     <th scope="col">Phone</th>
     <th scope="col">Whatsapp</th>
-    <th scope="col">DateTime</th>
+    <th scope="col">Trip Date</th>
     <th scope="col">Price</th>
     <th scope="col">Currency</th>
     <th scope="col">Note</th>
-    <th scope="col">guest</th>
+    <th scope="col">Guest</th>
     <th scope="col">Options</th>
   </tr>
 </thead>
@@ -142,7 +143,7 @@ let {id} = useParams()
 
   </div>
   <nav aria-label="Page navigation example " className='d-flex mt-3 justify-content-center'>
-  <ul className="pagination">
+  <ul className={ww < 600?"pagination pagination-sm":"pagination"}>
   {pageNumber.map((elem, idx) => (
   <li key={idx} className="page-item" aria-label={elem.label}>
     
