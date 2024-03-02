@@ -6,72 +6,66 @@ import $ from "jquery";
 import { BallTriangle } from 'react-loader-spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faX } from '@fortawesome/free-solid-svg-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteTour, getToursInPaginator } from '../../Redux/tourSlice';
+import Button from '@mui/material/Button';
+
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Typography from '@mui/material/Typography';
+import styled from '@emotion/styled'
 
 export default function AdminTours() {
-  const [tours, setTours] = useState(null)
-  const [pageNumber, setPageNumber] = useState(null)
-  const [pageNext, setPageNext] = useState(null)
-  const [pagePrev, setPagePrev] = useState(null)
-  const [currentPage, setCurrentPage] = useState(null)
   const [selectToDel, setSelectToDel] = useState(null)
+
+  const {allTours,paginatorInfo,pervAndNext,loading,error} = useSelector(state => state.tours)
+  const dispatch = useDispatch()
+
+  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+      padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+      padding: theme.spacing(1),
+    },
+  }));
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = (e) => {
+   setSelectToDel(e.target.id)
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+
   let ww = $(window).width()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
   const navigate = useNavigate();
- //Modal control
- const delForm = useRef()
- const delForm2 = useRef()
- function openModal(e){
-   setSelectToDel(e.target.id)
-   $('.deletesure').removeClass('d-none').addClass('d-flex')
-   $('.pagination').addClass('d-none')
-   
- }
- function closeModal(e){
-   setSelectToDel(e.target.id)
-   $('.deletesure').removeClass('d-flex').addClass('d-none')
-   $('.pagination').removeClass('d-none')
-   
- }
- let modal = delForm.current;
- function handelclose(event) {
-   if (event.target != modal && event.target != delForm2.current) {
-     
-     $('.deletesure').removeClass('d-flex').addClass('d-none')
-     $('.pagination').removeClass('d-none')
-   }
- }
+
 
   let {id} = useParams()
-  async function getTours(){
-    
-    try {
-      let {data} = await axios.get(`api/travels?page=${id}`)
-    setPageNext(data.links.next)
-    setPagePrev(data.links.prev)
-    setPageNumber(data.meta.links)
-    setCurrentPage(data.meta.current_page)
-    
-    setTours(data.data);
-    } catch (error) {
-      if (error.code == 'ERR_NETWORK') {
-        navigate('/503')
-      }
-    }
+  
+  function fetchTours(){
+    dispatch(getToursInPaginator(id))
   }
 
-  async function deleteTours(e) {
+
+  function deleteTours(e){
     e.preventDefault()
-    await axios.delete(`api/travels/${selectToDel}`,{ headers: { Authorization: header } })
-    $('.modal').removeClass('show')
-    $('.modal-backdrop').addClass('d-none')
-    const newTours = tours.filter((elem)=>elem.id != selectToDel)
-    setTours(newTours);
+    dispatch(deleteTour(selectToDel))
+    setOpen(false);
   }
   useEffect(() => {
-    getTours()
+    fetchTours()
   }, [id])
   return <>
-  {pageNumber != null?
+  {allTours != null?
   <div className='container'>
   <div className='d-flex align-items-center justify-content-between'>
   <h2 className='fw-bold'>Tours</h2>
@@ -95,10 +89,10 @@ export default function AdminTours() {
   </tr>
 </thead>
 <tbody>
-  {tours != null?tours.map((elem,idx)=><tr key={idx}>
+  {allTours != undefined?allTours.map((elem,idx)=><tr key={idx}>
     <th scope="row">{elem.id}</th>
     <td>{elem.name}</td>
-    <td>{elem.categoryId}</td>
+    <td>{elem.category.title}</td>
     <td>{elem.description}</td>
     <td>{elem.plan}</td>
     <td>{elem.address}</td>
@@ -106,17 +100,17 @@ export default function AdminTours() {
     <td>{elem.period}</td>
     <td>{elem.booked}</td>
     <td><div className='row'>
-      {elem.imageUrls.map((img,idx)=><div className='col-6' key={idx}>
+      {elem.imageUrls.map((img,idx)=><div className='col-12' key={idx}>
       <figure>
     
-        <img src={`https://knm-travels.com/storage/photos/${img.image}`} className='w-100' alt="Tour Image" />
+        <img src={`https://knm.knm-travels.com/storage/app/public/photos/${img.image}`} className='w-100 rounded-3' alt="Tour Image" />
       </figure>
       </div>)}
       </div></td>
       <td>
         <div className='d-flex align-items-end justify-content-center'>
         <Link to={`/addTour/${elem.slug}`} className='btn costume-btn text-black border-0 px-4'>Edit</Link>
-        {localStorage.getItem('role') == 2?<button id={elem.id} onClick={openModal} type="button" className='btn btn-danger border-0 px-4 mx-3'>Delete</button>:""}
+        {localStorage.getItem('role') == 2?<button id={elem.id} onClick={handleClickOpen} type="button" className='btn btn-danger border-0 px-4 mx-3'>Delete</button>:""}
         </div>
       </td>
   </tr>):""}
@@ -126,35 +120,55 @@ export default function AdminTours() {
 </table>
 
   </div>
-  
-  <div onClick={handelclose} className='position-fixed deletesure  d-none justify-content-center align-items-center'>
-<form onSubmit={deleteTours} >
-<div className='bg-white rounded-2 deletIndex'  >
-  <div className='d-flex justify-content-between pt-2 ps-2 border border-top-0 border-end-0 border-start-0' >
-  <h2 ref={delForm}>Delete</h2>
-  <FontAwesomeIcon icon={faX} onClick={closeModal} className='pe-3 pointer'/>
-  </div>
-  <div className='py-3 px-5' ref={delForm2}>
-  <h4>Are you sure?</h4>
-  <div className='d-flex justify-content-end pb-3 pe-3'>
-        <button type="button" onClick={closeModal} className="btn btn-outline-warning me-3">Close</button>
-        <button type="submit" className="btn btn-outline-danger">Yes</button>
-      </div>
-  </div>
-  
-</div>
-</form>
-</div>
+ 
+<BootstrapDialog 
+      sx={{
+        zIndex:'99999999999',
+        
+      }}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle className='fw-semibold' sx={{ m: 0, p: 2,fontFamily:'mainFont' }} id="customized-dialog-title">
+         Delete
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent  dividers>
+          <Typography sx={{fontFamily:'mainFont'}} paddingRight={5} f paddingLeft={5} gutterBottom>
+            <h5>Are you sure?</h5>
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{display:'flex',justifyContent:"center"}}>
+          <Button variant='outlined' sx={{fontFamily:'mainFont'}} autoFocus onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant='outlined' color='error' type='submit' sx={{fontFamily:'mainFont'}}  autoFocus onClick={deleteTours}>
+            Yes
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
 <nav aria-label="Page navigation example" className='d-flex mt-3 justify-content-center'>
 <ul className={ww < 600?"pagination pagination-sm":"pagination"}>
 
-{pageNumber.map((elem, idx) => (
+{paginatorInfo != undefined?paginatorInfo.links.map((elem, idx) => (
 <li key={idx} className="page-item" aria-label={elem.label}>
   
     {elem.label === "&laquo; Previous" || elem.label === "&raquo; Next" ? (
       // Content to render for "Previous" or "Next"
       <span aria-hidden="true">
-        {pagePrev != null?<Link className="page-link text-black" to={`${(parseInt(pagePrev.match(/\d+$/)[0]))}`} >
+        {pervAndNext.prev != null?<Link className="page-link text-black" to={`${(parseInt(pervAndNext.prev.match(/\d+$/)[0]))}`} >
        {elem.label === "&laquo; Previous" ? '<<' : ">>"}
         </Link>:<Link className="page-link text-black disabled" >
        {elem.label === "&laquo; Previous" ? '<<' : ">>"}
@@ -163,7 +177,7 @@ export default function AdminTours() {
     ):elem.label === "Next &raquo;" || elem.label === "&raquo; Next" ? (
       // Content to render for "Previous" or "Next"
       <span aria-hidden="true">
-        {pageNext != null?<Link className="page-link text-black" to={`${(parseInt(pageNext.match(/\d+$/)[0]))}`} >
+        {pervAndNext.next != null?<Link className="page-link text-black" to={`${(parseInt(pervAndNext.next.match(/\d+$/)[0]))}`} >
         {elem.label === "Next &raquo;" ? '>>' : "<<"}
         </Link>:<Link className="page-link text-black disabled" >
         {elem.label === "Next &raquo;" ? '>>' : "<<"}
@@ -177,7 +191,7 @@ export default function AdminTours() {
     )}
   
 </li>
-))}
+)):""}
   
 </ul>
 </nav>

@@ -5,7 +5,17 @@ import { faArrowRight, faCircleCheck, faClock, faLocationDot, faStar, faX } from
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import { BallTriangle } from 'react-loader-spinner';
-
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import styled from '@emotion/styled';
+import { Rating } from '@mui/material';
+import { Favorite, FavoriteBorder, Star, StarBorder } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import { getReviews } from '../../Redux/reviewSlice';
+import { getTours } from '../../Redux/tourSlice';
 
 
 export default function TourDetails() {
@@ -14,7 +24,6 @@ export default function TourDetails() {
   
   const [tour, setTour] = useState(null)
   const [bookedTour, setBookedTour] = useState(null)
-  const [popTours, setPopTours] = useState(null)
   const [imageselected, setimageselected] = useState(null)
   const [service, setServiceRate] = useState(null)
   const [amenities, setAmenitiesRate] = useState(null)
@@ -22,8 +31,11 @@ export default function TourDetails() {
   const [price, setPriceRate] = useState(null)
   const [review, setReview] = useState(null)
   const [activeTab, setActiveTab] = useState('overview');
-  const [reviews, setReviews] = useState(null)
- 
+
+  const {randomTours} = useSelector(state => state.tours)
+  const {reviews} = useSelector(state => state.review)
+  const dispatch = useDispatch()
+
   let ww = $(window).width()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
 
@@ -56,39 +68,8 @@ export default function TourDetails() {
     setimageselected(e.target.id)
    
   }
-  function getRandomElements(arr, numElements) {
-    const copyArr = arr.slice();
-  
-    if (numElements > copyArr.length) {
-      console.error("Error: Number of elements requested is greater than array length");
-      return null;
-    }
-  
-    const randomElements = [];
-    for (let i = 0; i < numElements; i++) {
-      const randomIndex = Math.floor(Math.random() * copyArr.length);
-      randomElements.push(copyArr.splice(randomIndex, 1)[0]);
-    }
-  
-    return randomElements;
-  }
-  async function getTours(){
-   
-    try {
-      let {data} = await axios.get('api/travels')
-      // Get two random elements from the received data
-    const randomElements = getRandomElements(data.data,2);
-
-
-    
-
-    // Set the selected random elements using setPopTours
-    setPopTours(randomElements);
-    } catch (error) {
-      if (error.code == 'ERR_NETWORK') {
-        navigate('/503')
-      }
-    }
+  function fetchTours(){
+dispatch(getTours())
   }
   async function getTour() {
     try {
@@ -102,18 +83,10 @@ export default function TourDetails() {
     }
 
   }
-  async function getReviews() {
-    
-try {
-  let {data} = await axios.get(`api/reviews`)
-    setReviews(data.data)
-} catch (error) {
-  if (error.code == 'ERR_NETWORK') {
-    navigate('/503')
-  }
-}
 
-  }
+function fetchReviews(){
+  dispatch(getReviews())
+}
   function starsCreated(stars) {
     const starArray = [];
     for (let i = 0; i < stars; i++) {
@@ -143,9 +116,7 @@ try {
       }
         
       )
-    // }else{
-    //   navigate('/signin')
-    // }
+   
   }
   function closeReceipt(){
     $('.cardlayer').addClass('d-none')
@@ -157,7 +128,7 @@ try {
     
     try {
       await axios.post(`api/reviews?review=${review}&service_rating=${service}&amenities_rating=${amenities}&location_rating=${location}&price_rating=${price}&travel_id=${tour.id}`,null,{ headers: { Authorization: header } })
-
+      alert('Your review has been done successfully')
     } catch (error) {
       
     }
@@ -171,12 +142,20 @@ try {
           setCurrencyBase({base:e.target.value,cost:e.target.options[e.target.selectedIndex].getAttribute('data-cost')})
          })
      getTour() 
-     getTours()
-     getReviews()
-     
+     fetchTours()
+
+     fetchReviews()
   }, [id])
+  const date = new Date();
+  //Time formate 
+  const formatter = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+//Date short formate 
+  const formatters = new Intl.DateTimeFormat('en-US', { dateStyle: 'short' });
+
+  
+ 
   return <>
-  {tour != null ?<div className='container py-5 px-4 px-md-0 mt-5 position-relative' id='thechange'>
+  {tour != null?<div className='container py-5 px-4 px-md-0 mt-5 position-relative' id='thechange'>
     <div className='row position-relative'>
       <div className='col-lg-8'>
         <div>
@@ -191,16 +170,16 @@ try {
           <div className='col-6 text-center text-md-start col-md-2 costumeborder3 d-flex justify-content-center'>
             <div>
             <span className='detaillabel smallfont'>Duration</span>
-            <p className='fw-bold smallfont'>{tour.period} hours</p>
+            <p className='fw-bold '>{tour.period} hours</p>
             </div>
           </div>
           {tour.dateTime != null?<div className='col-6 text-center text-md-start col-md-3 costumeborder3 d-flex justify-content-center'>
            <div>
            <span className='detaillabel smallfont'>Tour Date</span>
-            <p className='fw-bold smallfont'>{tour.dateTime}</p>
+            <p className='fw-bold smallfont2'>{formatters.format(new Date(tour.dateTime))} {formatter.format(new Date(tour.dateTime))}</p>
            </div>
           </div>:""}
-          <div className='col-6 text-center text-md-start col-md-2'>
+          <div className={`${tour.dateTime == null?'col-12':'col-6'} text-center text-md-start col-md-2`}>
           <div>
           <span className='detaillabel smallfont'>Reviews</span>
           <div className='smallfont'>
@@ -209,23 +188,30 @@ try {
                     <FontAwesomeIcon icon={faStar} className='text-warning'/>
                     <FontAwesomeIcon icon={faStar} className='text-warning'/>
                     <FontAwesomeIcon icon={faStar} className='text-warning'/>
-                    5/5
                     </div>
           </div>
           </div>
          </div>
          <div className='row justify-content-center mb-5'>
           <div className='col-12 mb-3'>
-          {/* https://knm-travels.com/storage/photos/6578b102ed0c7_Screenshot (85).png  --> image server path*/}
+
             <div>
-              <img src={`https://knm-travels.com/storage/photos/${imageselected}`} alt='tourimages' className='w-100'/>
+              
+              <img src={imageselected != null?`https://knm.knm-travels.com/storage/app/public/photos/${imageselected}`:"/default-image-icon-missing-picture-page-vector-40546530.jpg"} alt='tourimages' className='tourDetailsSelectedImage '/>
             </div>
           </div>
-           {tour.imageUrls.map((elem,idx)=><div className='col-3 ' key={idx}> <div  style={{'cursor':'pointer'}} >
-            <img src={`https://knm-travels.com/storage/photos/${elem.image}`} className='w-100 imagelist rounded-2 ' id={elem.image} onClick={getimage}/>
+           
+          <Swiper
+        slidesPerView={4}
+        spaceBetween={30}
+        className="mySwiper px-2"
+      >
+        {tour.imageUrls.map((elem,idx)=><SwiperSlide><div className='col-12 gy-3' key={idx}> <div  style={{'cursor':'pointer'}} >
+            <img src={`https://knm.knm-travels.com/storage/app/public/photos/${elem.image}`} className='imagelist rounded-2 ' id={elem.image} onClick={getimage}/>
             
-          </div></div>)}
-          
+          </div></div></SwiperSlide>)}
+        
+      </Swiper>
          </div>
          <div>
       <ul className='list-unstyled d-flex justify-content-evenly ps-2 ps-md-0'>
@@ -371,14 +357,16 @@ try {
       </div>
     
     </div>
-    {popTours != null?<><hr className='w-75 m-auto my-3'/>
+   {randomTours != null?<>
+    <hr className='w-75 m-auto my-3'/>
     <div className='row my-3 gy-3'>
       <h3 className='my-3'>You May Also Like</h3>
-      {popTours.map((elem,idx)=><div key={idx} className="col-md-6 ">
+      {randomTours.map((elem,idx)=> <div  className="col-md-6 ">
+      <Link key={idx} to={`/tourdetails/${elem.slug}`} className='text-black text-decoration-none linkhover'>
     <div style={{'background':'#F6F8FB'}} className='tourheight'>
     <figure className='overflow-hidden'>
      
-{ elem.imageUrls[0] != null ?<img src={`https://knm-travels.com/storage/photos/${elem.imageUrls[0].image}`} className='w-100 imgscale rounded-1' alt="Tour Image" />:""}
+{ elem.imageUrls[0] != null ?<img src={`https://knm.knm-travels.com/storage/app/public/photos/${elem.imageUrls[0].image}`} className='w-100 imgscale rounded-1' alt="Tour Image" />:<img src="/default-image-icon-missing-picture-page-vector-40546530.jpg" className='w-100 imgscale rounded-1' alt="Tour Image" />}
     </figure>
     <figcaption className='p-4' >
     <h4>{elem.name}</h4>
@@ -401,22 +389,25 @@ try {
   <span className='highlightingcolor fw-semibold fs-5'>€ {(elem.cost * currencyBase.cost).toFixed(2)}</span>
 ) : null}
       </div>
-     <div>
-     <Link to={`/tourdetails/${elem.slug}`} className='text-black text-decoration-none linkhover'>More Information <FontAwesomeIcon className="fa-solid fa-arrow-right highlightingcolor ms-2" icon={faArrowRight}/></Link>
+     <div className='randomHover'>
+     More Information <FontAwesomeIcon className="fa-solid fa-arrow-right highlightingcolor ms-2" icon={faArrowRight}/>
      </div>
     </div>
     </figcaption>
     </div>
-    
-  </div>)
-
-      }
+    </Link>
+  </div>
   
-    </div></>:""}
+  )}
+
+      
+  
+    </div>
+   </>:""}
         </div>
       </div>
       
-      <div className='col-lg-4 vh-100 p-4 rounded-3 bookthis' style={{'border': '3px rgb(246, 248, 251) solid'}}>
+      <div className='col-lg-4 p-4 rounded-3 bookthis' style={{'border': '3px rgb(246, 248, 251) solid'}}>
         <div>
           <h5>Book This Tour</h5>
           <div className='my-3'>
@@ -486,7 +477,7 @@ try {
         </div>
       </div>
     </div>
-    <div className='position-fixed cardlayer d-none  d-flex justify-content-center p-3 align-items-center '>
+    <div className='position-fixed cardlayer d-none z-3  d-flex justify-content-center p-3 align-items-center '>
     <div className="card p-3" >
     <FontAwesomeIcon icon={faX} className='ms-auto pointer' onClick={closeReceipt}/>
   <div className="card-body text-center">
@@ -505,7 +496,7 @@ try {
         <p className='fw-semibold'>Address: <span className='fw-normal'>{bookedTour.address}</span></p> 
         <hr className='w-100'/>
         <div className='d-flex justify-content-between align-items-center'>
-        <p className='fw-semibold'>Total: <span className='fw-normal'>{currencyBase.base == 'USD'?`$ ${bookedTour.cost * currencyBase.cost}`:`€ ${(bookedTour.cost * currencyBase.cost).toFixed(2)}`}</span></p>
+        <p className='fw-semibold'>Total: <span className='fw-normal'>{currencyBase.base == 'USD'?`$ ${bookedTour.cost * currencyBase.cost}`:`€ ${(bookedTour.cost).toFixed(2)}`}</span></p>
         <p className='fw-semibold'>{bookedTour.code}</p> 
         </div>
     </div>:""}

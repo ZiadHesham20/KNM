@@ -4,40 +4,27 @@ import $ from "jquery";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCurrency } from '../../Redux/currencySlice';
 
 export default function Navbar() {
+  let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
   const [currency, setCurrency] = useState(null)
+  const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
   const [userImage, setUserImage] = useState(null);
-  const [isNavbarVisible, setNavbarVisible] = useState(true);
+  const {currencies} = useSelector(state => state.currency)
+  const dispatch = useDispatch()
 
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+    // Add any other headers as needed
+  };
   let current_path = window.location
   let location = useLocation()
   const navigate = useNavigate();
-//   $(window).scroll(function(){
-  
-//     if ($("#thechange").offset() != undefined) {
-//       if($(window).scrollTop() > (($("#thechange").offset().top - 85) - $('nav').innerHeight())){
-//         $('nav').removeClass('bg-transparent')
-//         $('nav').addClass('bg-white')
-//        $('nav').addClass("shadow-sm");
-//        $('.navtext').css("color","black");
-//        $('.currencylist').css("color","black");
-      
-//       }
-//       else{
-//       $('nav').removeClass('bg-white')
-//        $('nav').removeClass("shadow-sm");
-//        $('.navtext').css("color","white");
-//        $('.currencylist').css("color","white");
-       
-  
-       
-       
-   
-//       }
-//     }
-    
-//  })
+
   function logout() {
   navigate('/home')
   localStorage.clear();
@@ -57,26 +44,23 @@ async function getUserPhoto(){
     }
   }
 }
-async function getCurrencies(){
-  try {
-    let {data} = await axios.get('api/currencies')
-  setCurrency(data.data)
-  } catch (error) {
-    console.log(error.code);
-  }
+
+function fetchCurrencies(){
+dispatch(getCurrency())
 }
 function active(e){
   $('.navele').removeClass('navlink-border')
     $(`#${e.target.id}`).addClass('navlink-border')
 }
 useEffect(() => {
-  getCurrencies()
+  fetchCurrencies()
   getUserPhoto()
   
   $('#currencychange').on("change",function(e){
     
     localStorage.setItem('selectedCurrency',JSON.stringify({'selectedCurrencyBase':e.target.value,'selectedCurrencyCost':e.target.selectedOptions[0].getAttribute('data-cost')}))
-   })
+    setCurrencyBase({base:e.target.value,cost:e.target.options[e.target.selectedIndex].getAttribute('data-cost')})
+  })
 
 
   switch (current_path.pathname) {
@@ -107,29 +91,32 @@ useEffect(() => {
       break;
     default:
       // Default case
+      $('.navele').removeClass('navlink-border');
+      $(`#home`).addClass('navlink-border');
       break;
       
+      
   }
-  setNavbarVisible(false)
- 
-}, [current_path,location])
+  
+
+}, [current_path,location,currencyBase])
 
 
   return <>
-  <nav className="navbar navbar-expand-lg bg-white shadow-sm position-fixed start-0 top-0 end-0" aria-label="Offcanvas navbar large">
+  <nav className="navbar navbar-expand-lg bg-white shadow-sm position-fixed start-0 top-0 end-0" aria-label="Offcanvas navbar small">
     <div className="container">
       <Link className="navbar-brand text-center logo navtext d-flex align-items-center fw-bold" to="/"><img src="/logo.svg" className='w-100 rounded-circle ' alt="KNM" />KNM TRAVEL</Link>
       <button className="navbar-toggler " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar2" aria-controls="offcanvasNavbar2" aria-label="Toggle navigation">
         <span className="navbar-toggler-icon"></span>
       </button>
-      <div className="offcanvas offcanvas-end " tabIndex="-1" id="offcanvasNavbar2" aria-labelledby="offcanvasNavbar2Label">
+      <div className="offcanvas offcanvas-end w-50" tabIndex="-1" id="offcanvasNavbar2" aria-labelledby="offcanvasNavbar2Label">
         <div className="offcanvas-header">
           <h5 className="offcanvas-title" id="offcanvasNavbar2Label">Menu</h5>
           <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div className="offcanvas-body ">
         
-        {localStorage.getItem('auth_token') != null?<div style={{width:"100%"}} className='me-2 d-flex align-items-center d-md-none'><Link className='text-center' to={'/profile'}><img src="/Default.jpg" className='w-25 rounded-circle' /></Link></div>:""}
+        {localStorage.getItem('auth_token') != null?<div style={{width:"100%"}} className=' d-flex align-items-center d-md-none'><Link className='text-center' to={'/profile'}><img src="/Default.jpg" className='w-25 rounded-circle' /></Link></div>:""}
           <ul className="navbar-nav text-center justify-content-center flex-grow-1 ">
           <li className="nav-item me-2">
             {current_path.pathname == '/' || current_path.pathname == '/home'?<Link className="nav-link navele  navtext navlink-border fw-bold " id='home' onClick={active} aria-current="page" to='/home'>Home</Link>:<Link className="nav-link text-black navele  fw-bold " id='home' onClick={active} aria-current="page" to='/home'>Home</Link>}
@@ -150,11 +137,11 @@ useEffect(() => {
             <Link className="nav-link navele  fw-bold navtext" aria-current="page" id='dashboard' onClick={active} to="/admin">Dashboard</Link>
           </li>:""}
           </ul>
-          {localStorage.getItem('auth_token') != null?<div  className='smallProfile me-2 d-flex align-items-center d-none d-md-flex'><Link to={'/profile'}>{userImage != null?<img src={`https://knm-travels.com/storage/${userImage}`} className='w-100 rounded-circle' />:<img src="/Default.jpg" className='w-100 rounded-circle' />}</Link></div>:""}
+          {localStorage.getItem('auth_token') != null?<div  className='smallProfile me-2 d-flex align-items-center d-none d-md-flex'><Link to={'/profile'}>{userImage != null?<img src={`https://knm.knm-travels.com/storage/app/public/${userImage}`} className='w-100 rounded-circle' />:<img src="/Default.jpg" className='w-100 rounded-circle' />}</Link></div>:""}
           <div className="dropdown me-2">
   
-  <select className='btn btn-outline-light px-4 currencylist btn-select text-black' id='currencychange' >
-    {currency != null?currency.map((elem,idx)=><option key={idx} className='text-center text-black pointer' value={elem.code} data-cost={elem.cost}>{elem.code}</option>):""}
+  <select value={currencyBase.base} className='btn btn-outline-light px-4 currencylist btn-select text-black' id='currencychange' >
+    {currencies != null?currencies.map((elem,idx)=><option key={idx} className='text-center text-black pointer' value={elem.code} data-cost={elem.cost}>{elem.code}</option>):""}
     
   </select>
 </div>

@@ -4,16 +4,17 @@ import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'
 import $ from "jquery";
-import axios from 'axios';
 import { BallTriangle } from 'react-loader-spinner';
+import { useDispatch, useSelector } from 'react-redux';
+import { getDestinations } from '../../Redux/destinationSlice';
 
 export default function RidePrices() {
   let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
   const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
 
-    const [currentDestinations, setCurrentDestinations] = useState(null)
-    const [currentDestinationCost, setCurrentDestinationCost] = useState(null)
-  const [destinations, setDestinations] = useState(null)
+  const {destinations,selectedDestination,selectedDestinationCost} = useSelector(state => state.destination)
+  const dispatch = useDispatch()
+
   
   const navigate = useNavigate();
     const currentDate = new Date();
@@ -31,57 +32,23 @@ export default function RidePrices() {
   const handleDateChange = (event) => {
     setMinDate(event.target.value);
   };
-  // async function getDestinations() {
-  //   try {
-  //     let {data} = await axios.get('api/destinations')
-  //   setCurrentDestinations(data.data.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to))
-  //   console.log(data);
-  //   } catch (error) {
-  //     if (error.code == 'ERR_NETWORK') {
-  //       navigate('/503')
-  //     }
-  //   }
-        
-  //     }
   
 
-  // async function getDestination() {
-  //   try {
-  //     getDestination()
-  //     // let {data} = await axios.get(`api/destinations/${}`)
-  //   // setDestinations(data.data)
-  //   // //selected destination
-  //   // setCurrentDestinations(data.data.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to))
-  //   // console.log(data.data.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to));
-  //   } catch (error) {
-  //     if (error.code == 'ERR_NETWORK') {
-  //       navigate('/503')
-  //     }
-  //   }
-  // }
-  async function getDestinations() {
-    try {
-      let {data} = await axios.get('api/destinations')
-    setDestinations(data.data)
-    //selected destination
-    setCurrentDestinations(data.data.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to))
-    setCurrentDestinationCost(data.data.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to)[0].cost)
-    } catch (error) {
-      if (error.code == 'ERR_NETWORK') {
-        navigate('/503')
-      }
-    }
+  function fetchDestination(){
+    dispatch(getDestinations())
+    console.log(destinations);
+
   }
+
     useEffect(() => {
         window.scrollTo(0,0)
         $('#currencychange').on("change",async function(e){
             setCurrencyBase({base:e.target.value,cost:e.target.options[e.target.selectedIndex].getAttribute('data-cost')})
            })
-           getDestinations()
-          //  getDestination()
+           fetchDestination()
       }, [])
   return <>
-   {currentDestinations != null && currentDestinationCost != null?<div className='container pt-5 mt-5'  id='thechange'>
+   {selectedDestination != null && selectedDestinationCost != null?<div className='container pt-5 mt-5'  id='thechange'>
     
    <div className='row p-4'>
                     <div className='d-flex'>
@@ -179,7 +146,7 @@ export default function RidePrices() {
                    <div className=' text-center'>
                    
                     
-                   <p className='fw-semibold fs-4'>{currencyBase.base == 'USD'?`$ ${Number(currentDestinationCost) * currencyBase.cost}`:`€ ${(Number(currentDestinationCost) * currencyBase.cost).toFixed(2)}`}</p>
+                   <p className='fw-semibold fs-4'>{currencyBase.base == 'USD'?`$ ${Number(selectedDestinationCost) * currencyBase.cost}`:`€ ${(Number(selectedDestinationCost) * currencyBase.cost).toFixed(2)}`}</p>
                      {JSON.parse(localStorage.getItem('selectedDestinations')).from != '' && JSON.parse(localStorage.getItem('selectedDestinations')).to != ''?<Link to={'/transferform'} className='btn btn-lg costume-btn text-white fw-semibold border-0 px-5 mb-3 my-md-0 rounded-1'>Select</Link>:""} 
                 </div>
             </div>

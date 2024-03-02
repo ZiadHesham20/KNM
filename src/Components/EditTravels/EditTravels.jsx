@@ -38,7 +38,7 @@ export default function EditTravels() {
   async function getTours(){
     
     try {
-      let {data} = await axios.get(`api/travels`)
+      let {data} = await axios.get(`api/travel/all`)
     
     setTours(data.data)
     } catch (error) {
@@ -140,12 +140,13 @@ export default function EditTravels() {
             <div>
             <label htmlFor="dateTime" className='fw-semibold'>DateTime</label>
             </div>
+        
             {travelOld != null && id != undefined?<input className='form-control'
         type="datetime-local"
         id="futureDate"
         name="futureDate"
         
-        value={moment(travelOld.bookDate).toString}
+        value={travelOld.bookDate}
         onChange={handleDateChange}
         min={minDate}
       />:<input className='form-control'

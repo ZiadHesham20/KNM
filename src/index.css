@@ -20,6 +20,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
 }
+.fromRide{
+  font-family: mainFont !important;
+}
 .highlightingcolor{
   color: #FECD27;
 }
@@ -68,7 +71,7 @@ nav{
 }
 .hone{
   position: absolute;
-  top: 30%;
+  top: 40%;
   left: 12%;
   right: 12%;
   color: white;
@@ -107,6 +110,9 @@ nav{
 .smallfont{
   font-size: small;
   
+}
+.smallfont2{
+  font-size: medium;
 }
 .costumemargin{
   margin-top: 5rem;
@@ -151,7 +157,10 @@ opacity: 1;
 .linkhover{
   transition: all 0.3s;
 }
-.linkhover:hover{
+.randomHover{
+  transition: all 0.3s;
+}
+.linkhover:hover .randomHover{
   color: #FECD27 !important;
 }
 
@@ -215,9 +224,16 @@ footer{
 }
 .imagelist{
   transition: all 0.2s;
+  width: 100%;
+  height: 178px;
 }
 .imagelist:hover{
   border-bottom: 5px #FECD27 inset !important;
+}
+.imagelist2{
+  transition: all 0.2s;
+  width: 100%;
+  height: 178px;
 }
 .active2{
   position: relative;
@@ -232,14 +248,34 @@ footer{
   border-color: #969BA1;
 }
 
-
+.catlayer{
+  /* background-color: rgba(0, 0, 0, 0.3); */
+  background-image: linear-gradient(to bottom, rgba(255,0,0,0) 50%, rgba(0, 0, 0,1));
+}
+#catImage{
+  transition: all 0.8s;
+  width: 416px;
+  height: 234px;
+}
+.categoryItem:hover #catImage{
+ transform: scale(1.2);
+ transition: all 0.8s;
+}
+.catImageAdmin{
+  width: 50%;
+}
 
 
 
 .bookthis{
   position: sticky;
+  position: -webkit-sticky;
+position: -moz-sticky;
+position: -o-sticky;
+position: -ms-sticky;
   top: 10%;
   bottom: 0;
+  height: 100vh;
 }
 
 .active2::after {
@@ -517,13 +553,7 @@ box-shadow: 0 0 0 0.1rem #FECD27 !important;
 }
 
 
-/* .card{
-  position: fixed;
-  top: 20%;
-  left: 40%;
-  width: 25%;
 
-} */
 .signupvisible{
   top: 60%;
   left: 90%;
@@ -542,7 +572,35 @@ box-shadow: 0 0 0 0.1rem #FECD27 !important;
 .normalCursor{
   cursor: default;
 }
+.tourDetailsSelectedImage{
+  width: 872px;
+  height: 490px;
+}
 
+
+
+
+ .slick-next:before{
+  content: '' !important;
+  background: url('../public/circle-chevron-right-solid.svg') no-repeat;
+  background-size: contain;
+  display: inline-block;
+  width: 24px; /* Adjust the width as needed */
+  height: 24px; /* Adjust the height as needed */
+  margin-left: 5px; /* Adjust spacing as needed */
+  vertical-align: middle;
+}
+.slick-prev:before{
+  content: '' !important;
+  background: url('../public/circle-chevron-right-solid.svg') no-repeat;
+  background-size: contain;
+  transform: rotate(180deg);
+  display: inline-block;
+  width: 24px; /* Adjust the width as needed */
+  height: 24px; /* Adjust the height as needed */
+  margin-right: 5px; /* Adjust spacing as needed */
+  vertical-align: middle;
+}
 
 @media (width < 600px){
   .hone{
@@ -569,7 +627,7 @@ box-shadow: 0 0 0 0.1rem #FECD27 !important;
     border-right: 0 #FECD27 solid ;
   }
   .costumeborder3{
-    border-right: 0 #d1d1d1 dashed ;
+    border-right: 0px #d1d1d1 dashed ;
   
   }
   hr{
@@ -621,9 +679,57 @@ box-shadow: 0 0 0 0.1rem #FECD27 !important;
   .reviewTest{
     font-size: small;
   }
+  .catSeeMore{
+    width: 100%;
+  }
+  .bookthis{
+    position: static;
+    height: auto;
+  }
+  .smallfont2{
+    font-size: small;
+  }
+  body{
+    overflow: scroll !important;
+  }
+  .imagelist{
+    transition: all 0.2s;
+    width: 100%;
+    height: 63px;
+  }
 }
+@media (width < 768px){
+  .formtogo{
+    position: static;
+    width: 100%;
+    padding: 1rem 3rem;
+    
+    
+  }
+  .bookthis{
+    position: static;
+    height: auto;
+  }
+  
+}
+@media (width < 1060px){
+  .catImageAdmin{
+    width: 200px;
+    height: 150px;
+  }
+}
+
 @media (width < 1330px){
   .tables{
     overflow-x: scroll;
   }
+}
+@media (width < 1400px){
+  .tourDetailsSelectedImage{
+    width: 100%;
+    height: auto;
+  }
+}
+.css-k4qjio-MuiFormHelperText-root.Mui-error{
+  font-family: mainFont;
 }

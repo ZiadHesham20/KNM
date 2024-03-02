@@ -14,16 +14,18 @@ export default function AddDestination() {
   const [fromD,setFromD] = useState(null)
   const {id} = useParams()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
+  
   const navigate = useNavigate();
 
   async function getTourDetails() {
     try {
-      let {data} = await axios.get(`api/destinations/${id}`) 
+      let {data} = await axios.get(`api/destinations/${id}`,{ headers: { Authorization: header } }) 
     setTourOld({...tourOld,price:data.data.cost,to:data.data.to,from:data.data.from})
     } catch (error) {
-      if (error.code == 'ERR_NETWORK') {
-        navigate('/503')
-      }
+      // if (error.code == 'ERR_NETWORK') {
+      //   navigate('/503')
+      // }
+      console.log(error);
     }
 
   }

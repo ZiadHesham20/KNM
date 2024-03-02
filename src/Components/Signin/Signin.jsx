@@ -5,53 +5,43 @@ import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import $ from "jquery";
+import { useDispatch, useSelector } from 'react-redux';
+import { signIn } from '../../Redux/authSlice';
+import { TailSpin } from 'react-loader-spinner';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Alert, IconButton, InputAdornment, TextField } from '@mui/material';
 
 
 
 export default function Signin() {
   const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errors,setErrors] = useState(null)
+    
+    
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const {userData,loading,errors} = useSelector(state => state.userAuth)
+    const dispatch = useDispatch()
 
-    function passwordVisibility() {
-        var x = document.getElementById("password");
-        if (x.type === "password") {
-          x.type = "text";
-        } else {
-          x.type = "password";
-        }
-      }
-      async function submitMyForm(e) {
+    
+      function submitSignIn(e){
         e.preventDefault()
-
-        try {
-              await axios.get('sanctum/csrf-cookie').then(async res=>{
-                await axios.post('api/login',{email:email
-            ,password:password}).then(res=>{
-              console.log(res);
-            if (res.data.role == 0) {
-              localStorage.setItem('auth_token',res.data.token);
-              localStorage.setItem('user_id',res.data.user_id)
-              localStorage.setItem('role',res.data.role)
-       navigate('/home')
-            } else {
-              localStorage.setItem('auth_token',res.data.token);
-              localStorage.setItem('user_id',res.data.user_id)
-              localStorage.setItem('role',res.data.role)
-       navigate('/admin')
-            }
-       })
-              })
+        dispatch(signIn({email,password})).then(res=>{
+              if (localStorage.getItem('role') == 0) {
+          navigate('/home')
+              } 
+              else if (localStorage.getItem('role') == 1 || localStorage.getItem('role') == 2){
+          navigate('/admin')
+              }
+          })
+      }
       
       
+      const handleClickShowPassword = () => setShowPassword((show) => !show);
   
-          
-      } catch (error) {
-          setErrors(error.response.data)
-      }
-      
-      }
+      const handleMouseDownPassword = (event) => {
+          event.preventDefault();
+      };
       useEffect(() => {
         $('nav').addClass('d-none')
         $('footer').addClass('d-none')
@@ -70,26 +60,72 @@ export default function Signin() {
                     <h4 className='fw-bold text-center'>Welcome to KNM TRAVEL</h4>
                 </div>
                 <div>
-                   <form className='inputform m-auto my-5' method='post' onSubmit={submitMyForm}>
+                   <form className='inputform m-auto my-5' method='post' onSubmit={submitSignIn}>
                    <div className="mb-3">
   <label htmlFor="email" className="form-label fw-semibold">Email address</label>
   <input type="email" name='email' className="form-control form-control-md" id="email" value={email} onChange={(e)=> setEmail(e.target.value)} placeholder="name@example.com" required/>
 </div>
 <div className="mb-3 position-relative">
-<label className="form-label" htmlFor="password">Password</label>
-            <input  type="password" name="password" id="password" className="form-control form-control-md" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Enter password" required/>
-            <FontAwesomeIcon icon={faEye} onClick={passwordVisibility} className=" pointer position-absolute cursor-pointer"/>
-          
+<label className="form-label fw-semibold" htmlFor="password">Password</label>
+             <TextField
+                                        sx={{
+                                            "& input::placeholder": {
+                                                fontSize: "1rem",
+                                                fontFamily: 'mainFont',
+                                                opacity: '0.8'
+                                            },
+                                            "& input":{
+                                                fontFamily: 'mainFont'
+                                            }
+                                        }}
+                                        fullWidth
+                                        required
+                                        placeholder='Enter password'
+                                        size='small'
+                                        name="password" id="password"
+                                        value={password} onChange={(e)=>setPassword(e.target.value)}
+                                        type={showPassword ? 'text' : 'password'}
+                                        InputProps={{
+                                            endAdornment: <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                    size='small'
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }}
+                                    />
 </div>
-{errors != null?<div className='alert-danger alert'>
-  <h6>Incorrect Password or Email</h6>
-</div>:""}
+{errors != null?<Alert sx={{
+  fontFamily: 'mainFont'
+}} severity='error'>
+<h6>Incorrect Password or Email</h6>
+</Alert>:""}
+
 <div className="mb-3 d-flex justify-content-between">
 
 
 </div>
-<div className='text-center'>
-<button className='btn w-50' style={{backgroundColor:'#FECD27'}}>Login</button>
+<div className='d-flex justify-content-center'>
+
+<button className='btn w-50 d-flex justify-content-center' style={{backgroundColor:'#FECD27'}}>{loading == true?<span ><TailSpin
+  visible={true}
+  height="25"
+  width="25"
+  color="black"
+  ariaLabel="tail-spin-loading"
+  radius="1"
+  wrapperStyle={{}}
+  wrapperClass=""
+  
+
+  /></span>:"Login"}</button>
+
+
 
 </div>
                    </form>

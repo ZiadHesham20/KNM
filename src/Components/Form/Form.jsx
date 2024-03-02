@@ -7,6 +7,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { BallTriangle } from 'react-loader-spinner';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { Timeline, TimelineConnector, TimelineContent, TimelineDot , TimelineItem, TimelineOppositeContent, TimelineSeparator, timelineItemClasses, timelineOppositeContentClasses } from '@mui/lab'
+import { LocationOn } from '@mui/icons-material';
+
 
 export default function Form() {
 
@@ -18,6 +21,7 @@ export default function Form() {
 
   const [currentDestinations, setCurrentDestinations] = useState([])
   const [loading, setLoading] = useState(true);
+  const [guestNumber, setGuestNumber] = useState(1)
   const navigate = useNavigate();
   
   // Add one day to the current date to set the minimum selectable date
@@ -54,7 +58,7 @@ setLoading(false)
       to: e.target.to.value,
       name:e.target.name.value,
     phoneNumber: e.target.phone.value,
-    whatsNumber: e.target.phone.value,
+    whatsNumber: e.target.whatsappNumber.value,
       dateTime: e.target.dateTime.value,
       guest: e.target.guest.value,
       code: e.target.currencycode.value,
@@ -146,7 +150,7 @@ setLoading(false)
             <div>
             <label htmlFor="guest" className='fw-semibold'>Guest</label>
             </div>
-            <input className='form-control' type="number" name='guest' id='guest' min={1} max={3}/>
+            <input className='form-control' defaultValue={1} type="number" name='guest' id='guest' min={1} max={3} onChange={(e)=>{setGuestNumber(e.target.value)}}/>
             </div>
             <div>
             <div>
@@ -159,27 +163,62 @@ setLoading(false)
         </div>
       </div>
       <div className='col-lg-4'>
-        <div className=' p-3 rounded-3 btn-select shadow-sm'>
+        
+
+
+        <div className=' p-3 my-2 rounded-3 btn-select shadow-sm'>
           <div className='my-3 p-2 border border-1 border-start-0 border-top-0 border-end-0 bordercheck'>
           <h4><FontAwesomeIcon icon={faCar}/> Economy Sedan</h4>
           </div>
-          <div className='p-2 bg-white mt-3 rounded-3'>
-            <h5>From</h5>
-
-            {currentDestinations != null? <input type="number" name='id' form='rideform' value={currentDestinations[0].id} hidden/>:""}
-            <input type="text" name='from' value={JSON.parse(localStorage.getItem('selectedDestinations')).from} form='rideform' hidden/>
-            <p><FontAwesomeIcon icon={faLocationDot} className="highlightingcolor"/> {JSON.parse(localStorage.getItem('selectedDestinations')).from}</p>
-          </div>
-          <div className='p-2 bg-white rounded-3'>
-            <h5>To</h5>
-            <input type="text"  name='to' value={JSON.parse(localStorage.getItem('selectedDestinations')).to} form='rideform' hidden/>
-            <p><FontAwesomeIcon icon={faLocationDot} className="highlightingcolor"/> {JSON.parse(localStorage.getItem('selectedDestinations')).to}</p>
-          </div>
+          <Timeline
+          sx={{
+            [`& .${timelineItemClasses.root}:before`]: {
+              flex: 0,
+              padding: 0,
+            },
+          }}>
+    <TimelineItem>
+        {/* the other side of the dot */}
+        {currentDestinations != null? <input type="number" name='id' form='rideform' value={currentDestinations[0].id} hidden/>:""}
+        <TimelineSeparator>
+            <TimelineDot sx={{bgcolor:'#F6F8FB'}}>
+            <LocationOn sx={{color:'#FECD27'}}/>
+            </TimelineDot>
+            {/* change connector color */}
+            <TimelineConnector sx={{bgcolor:'#FECD27',height:'80px'}}/>
+        </TimelineSeparator>
+        <TimelineContent>
+        <input type="text" name='from' value={JSON.parse(localStorage.getItem('selectedDestinations')).from} form='rideform' hidden/>
+          <h5 className='fromRide'>From</h5>
+          <span className='fromRide'>{JSON.parse(localStorage.getItem('selectedDestinations')).from}</span>
+        </TimelineContent>
+    </TimelineItem>
+    <TimelineItem>
+    
+        <TimelineSeparator >
+        <TimelineDot sx={{bgcolor:'#F6F8FB'}}>
+            <LocationOn sx={{color:'#FECD27'}}/>
+            </TimelineDot>
+        </TimelineSeparator>
+        <TimelineContent>
+        <input type="text"  name='to' value={JSON.parse(localStorage.getItem('selectedDestinations')).to} form='rideform' hidden/>
+        <h5 className='fromRide'>To</h5>
+        <span className='fromRide'>{JSON.parse(localStorage.getItem('selectedDestinations')).to}</span>
+        </TimelineContent>
+    </TimelineItem>
+  </Timeline>
           <div className='p-4 maincolor rounded-3 d-flex align-items-center justify-content-between'>
             <h5>Total </h5>
+            
             <input type="number" name="price" form='rideform' value={currentDestinations != null ?currencyBase.base == 'USD'? currentDestinations[0].cost * currencyBase.cost:(currentDestinations[0].cost * currencyBase.cost).toFixed(2):""} hidden/>
-            <h5 className='fw-bold'>{currentDestinations != null ?currencyBase.base == 'USD'?`$ ${currentDestinations[0].cost * currencyBase.cost}`:`€ ${(currentDestinations[0].cost * currencyBase.cost).toFixed(2)}`:""}</h5>
+            <h5 className='fw-bold'>{currentDestinations != null ?currencyBase.base == 'USD'?`$ ${currentDestinations[0].cost * currencyBase.cost * guestNumber}`:`€ ${(currentDestinations[0].cost * currencyBase.cost * guestNumber).toFixed(2)}`:""}</h5>
           </div>
+        </div>
+
+
+
+        <div>
+        
         </div>
       </div>
     </div>
@@ -193,7 +232,6 @@ setLoading(false)
   
   
     {bookedRide != null? <div> 
-      {console.log(bookedRide)}
       <p className='fw-semibold'>User Name: <span className='fw-normal'>{bookedRide.name}</span></p> 
         <p className='fw-semibold'>From: <span className='fw-normal'>{bookedRide.from}</span></p> 
         <p className='fw-semibold'>To: <span className='fw-normal'>{bookedRide.to}</span></p> 
@@ -203,7 +241,7 @@ setLoading(false)
         <p className='fw-semibold'>Ride Date: <span className='fw-normal'>{bookedRide.dateTime}</span></p> 
         <hr className='w-100'/>
         <div className='d-flex justify-content-between align-items-center'>
-        <p className='fw-semibold'>Total: <span className='fw-normal'>{currencyBase.base == 'USD'?`$ ${bookedRide.cost * currencyBase.cost}`:`€ ${(bookedRide.cost * currencyBase.cost).toFixed(2)}`}</span></p>
+        <p className='fw-semibold'>Total: <span className='fw-normal'>{currencyBase.base == 'USD'?`$ ${bookedRide.cost * currencyBase.cost}`:`€ ${(bookedRide.cost).toFixed(2)}`}</span></p>
         <p className='fw-semibold'>{bookedRide.code}</p> 
         </div>
     </div>:""}

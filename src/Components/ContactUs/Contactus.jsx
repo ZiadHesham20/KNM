@@ -42,12 +42,25 @@ export default function Contactus() {
       <div>
       <ul className="list-group list-group-flush ">
 <li className="list-group-item d-flex"><div><FontAwesomeIcon icon={faPhone} className='fw-bold fa-2x highlightingcolor me-3 gradient-text'/></div><div className='fw-semibold'>
-Phone <Link to='tel:+201004587733' className='text-decoration-none con'>
+Phone <div className='d-flex'>
+<Link to='tel:+201270490987' className='text-decoration-none con'>
+<p className='fs-6 fw-normal text-black'>+201270490987</p>
+</Link>
+<p className='mx-2'>,</p>
+<Link to='tel:+201004587733' className='text-decoration-none con'>
 <p className='fs-6 fw-normal text-black'>+201004587733</p>
-</Link></div></li>
+</Link>
+</div>
+</div></li>
 
 <li className="list-group-item d-flex"><div><FontAwesomeIcon icon={faWhatsapp} className="fw-bold me-3 fa-2x highlightingcolor gradient-text "/></div><div className='fw-semibold'>
-Whatsapp <Link to='https://api.whatsapp.com/send/?phone=201270490987&text&type=phone_number&app_absent=0' className='text-decoration-none con'><p className='fs-6 text-black fw-normal'>+201011941006</p></Link></div></li>
+Whatsapp 
+<div className='d-flex'>
+<Link to='https://api.whatsapp.com/send/?phone=201270490987&text&type=phone_number&app_absent=0' className='text-decoration-none con'><p className='fs-6 text-black fw-normal'>+201270490987</p></Link>
+<p className='mx-2'>,</p>
+<Link to='https://api.whatsapp.com/send/?phone=201004587733&text&type=phone_number&app_absent=0' className='text-decoration-none con'><p className='fs-6 text-black fw-normal'>+201004587733</p></Link>
+</div>
+</div></li>
 
 <li className="list-group-item d-flex"><div><FontAwesomeIcon icon={faEnvelope} className="fw-bold me-3 fa-2x highlightingcolor gradient-text "/></div><div className='fw-semibold'>
 Email <Link to='mailto:travelknm8@gmail.com' className='text-decoration-none con'>

@@ -6,14 +6,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCalendar, faCircleXmark, faClock, faHeadset, faStar } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { BallTriangle } from 'react-loader-spinner';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { getTours } from './../../Redux/tourSlice';
+import { getCategories } from '../../Redux/categorySlice';
+import { getDestinations } from '../../Redux/destinationSlice';
 // azbt hett el blur
 
 export default function Home() {
-  const [popTours, setPopTours] = useState(null)
-  const [tours, setTours] = useState(null)
-  const [currencyBase, setCurrencyBase] = useState({base:'USD',cost:'1.00'})
-  const [destinations, setDestinations] = useState(null)
+  let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
+ 
+  const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
+  
 
+  const {popularTours,loading,error} = useSelector(state => state.tours)
+  const allCategory = useSelector(state => state.category)
+  const {destinations} = useSelector(state => state.destination)
+  const dispatch = useDispatch()
+
+
+  const header = `Bearer ${localStorage.getItem('auth_token')}`;
   const closeOffcanvas = () => {
     // Use jQuery or any other method to close the offcanvas
     // Example using jQuery
@@ -52,7 +68,6 @@ export default function Home() {
     }else{
       navigate('/transferform')
     }
-    console.log(destinations.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to).length);
   }
   // Slider settings
   
@@ -98,28 +113,16 @@ export default function Home() {
         slidesToScroll: 1
       };
       let ww = $(window).width()
-      async function getDestinations() {
-        try {
-          let {data} = await axios.get('api/destinations')
-          
-        setDestinations(data.data)
-        } catch (error) {
-          if (error.code == 'ERR_NETWORK') {
-            navigate('/503')
-          }
-        }
+      
+     function fetchDestinations(){
+      dispatch(getDestinations())
+     }
+     function fetchTours(){
+        dispatch(getTours())
+
       }
-      async function getTours(){
-        try {
-          let {data} = await axios.get('api/travels')
-        const numDescending = data.data.sort((a,b)=> b.booked - a.booked);
-        setPopTours(numDescending.slice(0,6))
-        setTours(data.data.slice(3,9));
-        } catch (error) {
-          if (error.code == 'ERR_NETWORK') {
-            navigate('/503')
-          }
-        }
+     function fetchCategories(){
+        dispatch(getCategories())
       }
 
       useEffect(() => {
@@ -133,17 +136,18 @@ export default function Home() {
      $('#currencychange').on("change",async function(e){
       setCurrencyBase({base:e.target.value,cost:e.target.options[e.target.selectedIndex].getAttribute('data-cost')})
      })
-     getDestinations()
-     getTours()
+     
+     fetchDestinations()
+     fetchTours()
+     fetchCategories()
      closeOffcanvas()
-     if (popTours != null) {
-      console.log(popTours.length);
-    }
-
+     
       }, [ww])
       
   return <>
-  {tours && popTours != null ?<>{/* Hero section */}
+  {   loading != true && allCategory.categories != null?<>
+ 
+  {/* Hero section */}
   <section className='container-fluid pt-5 pt-md-0 w-100'>
     <div className='row position-relative'>
       <div className='col-12 px-0'>
@@ -190,6 +194,7 @@ export default function Home() {
 <div className='costumeborder px-3'>
 <label htmlFor="dropoff" className='fw-semibold'>Dropoff</label>
                                <select className='form-control' name="to" required>
+                                
                                 {destinations != null?destinations.map((elem,idx)=><option key={idx} value={elem.to}>{elem.to}</option>):""}
                     </select>
                     </div>
@@ -231,19 +236,47 @@ export default function Home() {
       </div>
     </div>
   </section>
+  
+  <section id='thechange' className='container my-5 py-5'>
+  <h2 className='text-center text-uppercase'>Choose by category</h2>
+<hr className='m-auto  my-4 rounded-1'/>
+<div className="row gy-3 justify-content-evenly">
+  {allCategory.categories.slice(0,9).map((elem,idx)=><div className='col-md-4' key={idx}>
+  <Link to={`/categoryOf/${elem.slug}`}>
+  <div className='categoryItem rounded-3'>
+    <figure className='position-relative overflow-hidden rounded-3'>
+      <img src={elem.photo == null?'/default-image-icon-missing-picture-page-vector-40546530.jpg':`https://knm.knm-travels.com/storage/app/public/${elem.photo}`} className='w-100 rounded-3' id='catImage' alt="categoryImage" />
+      <div className='position-absolute top-0 bottom-0 end-0 start-0 catlayer rounded-3'>
+        <div className='text-center d-flex w-100 h-100 justify-content-center align-items-end pb-3'>
+          <div>
+          <p className='highlightingcolor fs-4'>Tours In</p>
+        <h6 className='fs-3 fw-semibold text-white text-uppercase'>{elem.title}</h6>
+          </div>
+        </div>
+      </div>
+    </figure>
+  </div>
+  </Link>
+  </div> )} 
+  <div className='d-flex justify-content-end align-items-center'>
+  <Link to='/tours' className='btn costume-btn text-white border-0 px-4 py-2 rounded-1 catSeeMore'>See More <FontAwesomeIcon icon={faArrowRight} className='ms-2'/></Link>
+
+  </div>
+</div>
+  </section>
   {/* Popular tours section*/}
-  <section id='thechange' className='costumemargin container my-5 py-5'>
+  <section className='costumemargin container my-5 pb-5'>
 <h6 className='text-uppercase text-center fw-light mb-4'>explore our tours</h6>
 <h2 className='text-center text-uppercase'>Most <br />Popular Tours</h2>
 <hr className='m-auto my-4 rounded-1'/>
 <div className='row pe-3 ps-5 px-md-4 p-md-0 w-100'>
     <div className="col-12">
     <Slider {...settings} >
-          {popTours != null?popTours.map((elem,idx)=><div key={idx} className='container '>
+          {popularTours != null?popularTours.map((elem,idx)=><div key={idx} className='container '>
           
           <Link to={`/tourdetails/${elem.slug}`} className='text-decoration-none text-black'><div className='position-relative d-flex imghi '>
             <figure className='position-absolute  top-0 bottom-0'>            
-            <img src={elem.imageUrls[0] != undefined ? `https://knm-travels.com/storage/photos/${elem.imageUrls[0].image}`:""} className='w-100 imghi rounded-1' alt="Tour Image" />
+            <img src={elem.imageUrls[0] != undefined ? `https://knm.knm-travels.com/storage/app/public/photos/${elem.imageUrls[0].image}`:"/default-image-icon-missing-picture-page-vector-40546530.jpg"} className='w-100 imghi rounded-1' alt="Tour Image" />
             </figure>
             
             <div className='container rounded-1 slideslayer z-1'>
@@ -260,10 +293,11 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
-                <div className='col-12 pb-3 d-flex gap-3 mt-auto justify-content-center flex-wrap mb-2'>
-                <div className='ps-3'>
+                <div className='ps-3 text-center'>
                         <h5>{elem.name}</h5>
                     </div>
+                <div className='col-12 pb-3 d-flex gap-3 mt-auto justify-content-center flex-wrap mb-2'>
+                
                     
                     <div className='d-flex'>
                     <div className='d-flex me-2 align-items-center'>
@@ -289,51 +323,9 @@ export default function Home() {
     </div>
 </div>
   </section>
+  
 {/* choose your experience section */}
-  <section className='container my-5 py-5'>
-  <h2 className='text-center text-uppercase'>Choose your experience</h2>
-<hr className='m-auto  my-4 rounded-1'/>
-<div className="row gy-5 justify-content-evenly">
-  {tours != null?tours.map((elem,idx)=><div key={idx} className="col-md-6 col-lg-4 ">
-    <div style={{'background':'#F6F8FB'}} className='tourheight'>
-    <figure className='overflow-hidden'>
-     
-{ elem.imageUrls[0] != null ?<img src={`https://knm-travels.com/storage/photos/${elem.imageUrls[0].image}`} className='w-100 imgscale rounded-1' alt="Tour Image" />:""}
-    </figure>
-    <figcaption className='p-4' >
-    <h4>{elem.name}</h4>
-    <div className='my-3'>
-    <span className='me-4'><FontAwesomeIcon icon={faClock} className='text-warning'/> 6 hours</span>
-    
-                    {/* 541.19 */}
-                    <FontAwesomeIcon icon={faStar} className='text-warning'/>
-                    <FontAwesomeIcon icon={faStar} className='text-warning'/>
-                    <FontAwesomeIcon icon={faStar} className='text-warning'/>
-                    <FontAwesomeIcon icon={faStar} className='text-warning'/>
-                    <FontAwesomeIcon icon={faStar} className='text-warning'/>
-                    5/5      
-    </div>
-    <div className='pt-3 aftercaption d-flex align-items-center justify-content-between'>
-      <div className='pb-1'>
-      From {currencyBase.base === 'USD' ? (
-  <span className='highlightingcolor fw-semibold fs-5'>$ {elem.cost * currencyBase.cost}</span>
-) : currencyBase.base === 'EUR' ? (
-  <span className='highlightingcolor fw-semibold fs-5'>€ {(elem.cost * currencyBase.cost).toFixed(2)}</span>
-) : null}
-      </div>
-     <div>
-     <Link to={`/tourdetails/${elem.slug}`} className='text-black text-decoration-none linkhover'>More Information <FontAwesomeIcon className="fa-solid fa-arrow-right highlightingcolor ms-2" icon={faArrowRight}/></Link>
-     </div>
-    </div>
-    </figcaption>
-    </div>
-    
-  </div>):""}
   
-  
-  
-</div>
-  </section>
   {/* WHY CHOOSE US section */}
   <section className='my-5 container-fluid py-5' style={{'backgroundColor':'#F6F8FB'}}>
 <div className='py-0 py-lg-5'>
@@ -388,7 +380,7 @@ Standards</h2>
 </div>
   </section>
   {/* hurghada */}
-  <section className='my-5 py-5 container'>
+  <section className='mt-5 pt-5 container'>
   <div className='mb-5'>
 <h2 className='text-center text-uppercase'>Trip In Hurghada</h2>
 <hr className='m-auto my-4 rounded-1'/>
@@ -422,7 +414,7 @@ Standards</h2>
 
 <hr className='m-auto my-0 my-lg-5 rounded-1'/>
 <div className='row justify-content-center'>
-    <div className='col-md-6'>
+    <div className='col-md-6 '>
     <Slider {...settings3}>
           <div className=' p-5'>
             <p className='text-center fw-semibold reviewTest'>
@@ -447,12 +439,14 @@ the most beautiful beaches I have ever seen.”
             </p>
           </div>
         </Slider>
+        
     </div>
 </div>
 
     </div>
     </figure>
   </section></>:<div className='vh-100 d-flex justify-content-center'>
+ 
   <div className=' position-fixed loading ' id='thechange'><BallTriangle 
   height={100}
   width={100}

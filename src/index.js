@@ -10,9 +10,13 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import axios from 'axios';
 
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
-axios.defaults.baseURL = 'http://localhost:8000/'
+
+axios.defaults.baseURL = 'https://knm.knm-travels.com/public/'
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+
+
 root.render(
   <BrowserRouter>
     <App />

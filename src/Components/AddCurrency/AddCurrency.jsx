@@ -26,9 +26,10 @@ const [price, setprice] = useState(null)
       code: data.data.code,
       price: data.data.cost})
     } catch (error) {
-      if (error.code == 'ERR_NETWORK') {
-        navigate('/503')
-      }
+      // if (error.code == 'ERR_NETWORK') {
+      //   navigate('/503')
+      // }
+      console.log(error);
     }
   }
   async function submitMyform(e) {

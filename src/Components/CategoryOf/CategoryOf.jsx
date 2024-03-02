@@ -1,35 +1,28 @@
 import React, { useEffect } from 'react'
 import $ from "jquery";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faStar } from '@fortawesome/free-solid-svg-icons';
 import { BallTriangle } from 'react-loader-spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTours, getToursByCategory } from '../../Redux/tourSlice';
-import { getCategories } from '../../Redux/categorySlice';
+import { getToursByCategory } from '../../Redux/tourSlice';
 
-export default function Tours() {
-  let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
-
+export default function CategoryOf() {
+    let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
+  const [tours, setTours] = useState(null)
   const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
-  const {allTours,loading,error} = useSelector(state=>state.tours)
-  const allCategory = useSelector(state => state.category)
+  const {allTours,loading} = useSelector(state => state.tours)
   const dispatch = useDispatch()
+  
   const navigate = useNavigate();
+  const {category} = useParams()
+  
 
   function fetchTours(){
-    dispatch(getTours())
+    dispatch(getToursByCategory(category))
   }
-  function fetchCategories(){
-    dispatch(getCategories())
-   }
-   function getByCat(e){
-    let selected = e.target.value
-    dispatch(getToursByCategory(selected))
-    
-   }
 
 
     let ww = $(window).width()
@@ -40,20 +33,17 @@ export default function Tours() {
       $('#currencychange').on("change",async function(e){
         setCurrencyBase({base:e.target.value,cost:e.target.options[e.target.selectedIndex].getAttribute('data-cost')})
        })
-    
-      fetchTours()
-      fetchCategories()
-
+       fetchTours()
     }, [])
   return <>
-  {allCategory.categories != null && allTours != null?<>
+  {loading != true && allTours != null?<>
     <section className='container-fluid mt-5 mt-md-0 pt-md-0'>
     <div className='row position-relative'>
       <div className='col-12 px-0'>
         <div>
           <figure >
-          <img src="./beach6.png" className='w-100 position-relative' alt="hero" />
-          {ww <= 600? <h4 className='text-center w-75 hone2 fw-semibold text-uppercase'>Tours</h4>:<h2 className='text-center w-75 display-5 hone2 fw-semibold text-uppercase'>Tours</h2>}
+          <img src="/beach6.png" className='w-100 position-relative' alt="hero" />
+          {ww <= 600? <h4 className='text-center w-75 hone2 fw-semibold text-uppercase'>{category}</h4>:<h2 className='text-center w-75 display-5 hone2 fw-semibold text-uppercase'>{category}</h2>}
 
           
           </figure>
@@ -63,10 +53,6 @@ export default function Tours() {
   </section>
   <section className='container py-5' id='thechange'>
     <div className='my-3'>
-    <select className="form-select text-center" onChange={getByCat} aria-label="Default select example">
-  <option className='text-center'>All</option>
-{allCategory.categories.map((elem,idx)=><option key={idx} className='text-center'>{elem.slug}</option>)}
-</select>
     </div>
     <div className='row gy-3'>
        {allTours.map((elem,idx)=> <div className='col-md-3' key={idx}>
@@ -129,6 +115,5 @@ export default function Tours() {
   visible={true}
 /></div>
     </div>}
-  
   </>
 }

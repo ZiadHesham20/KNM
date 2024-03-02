@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { BallTriangle } from 'react-loader-spinner';
+import { BallTriangle, TailSpin } from 'react-loader-spinner';
 import $ from "jquery";
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +13,7 @@ export default function Profile() {
     });
     
     const [photoUpdateButton, setphotoUpdateButton] = useState(null);
+    const [visibility, setVisibility] = useState(false);
     const header = `Bearer ${localStorage.getItem('auth_token')}`;
     const navigate = useNavigate();
   
@@ -37,15 +38,35 @@ export default function Profile() {
     e.preventDefault();
     axios.put(`api/users/${id}`,userData,{ headers: { Authorization: header } })
   };
-  const uploadPhoto = (e) => {
+  //wa2f hena
+  const uploadPhoto = async (e) => {
     e.preventDefault();
     const formData = new FormData();
 
       for (let i = 0; i < photoUpdateButton.length; i++){
         formData.append('profile_photo',photoUpdateButton[i])
       }
-    
-    axios.post(`api/users/update-profile`,formData,{ headers: { Authorization: header } })
+      setVisibility(true);
+      try {
+        await axios.post(`api/users/update-profile`, formData, { headers: { Authorization: header } })
+      .then((res) => {
+          if (res.status == 200) {
+              alert('Your profile photo has been updated');
+             setUserData({...userData,profile_photo: res.data.path});
+            
+          } else {
+             console.log(res);
+          }
+      })
+      } catch (error) {
+        alert(error.response.data.message)
+      } finally{
+        setVisibility(false);
+      }
+      
+      
+  
+      
   };
   const handleFileChange = (event) => {
 
@@ -70,14 +91,28 @@ export default function Profile() {
                 <div className="row align-items-center">
                 
                     <div className="col-md-4">
+                        
                        <form  method="post" onSubmit={uploadPhoto}> <div className="profile-img" encType='multipart/form-data'>
-                        {userData.profile_photo != null?<img src={`https://knm-travels.com/storage/${userData.profile_photo}`} className='w-100 rounded-circle' alt="profile image"/>:<img src={`./Default.jpg`} className='w-100 rounded-circle' alt="profile image"/>}
+                        {userData.profile_photo != null?<img src={`https://knm.knm-travels.com/storage/app/public/${userData.profile_photo}`} className='w-100 rounded-circle' alt="profile image"/>:<img src={`./Default.jpg`} className='w-100 rounded-circle' alt="profile image"/>}
                             
                             <div className="file my-2 btn btn-lg btn-primary">
                                 Change Photo
                                 <input type="file" name="file" onChange={handleFileChange} />
                             </div>
-                            {photoUpdateButton == true?<button type="submit" className='btn costume-btn updatebutton text-black border-0 px-4 my-1'>Update</button>:<button type="submit" className='btn costume-btn d-none updatebutton text-black border-0 px-4 my-3'>Update</button>}
+                            {photoUpdateButton == true?"":<div className='d-flex justify-content-center'>
+                            <button type="submit" className='btn costume-btn d-none updatebutton text-black border-0 px-4 my-3 d-flex '>Update <span className='ms-2'><TailSpin
+  visible={visibility}
+  height="25"
+  width="25"
+  color="black"
+  ariaLabel="tail-spin-loading"
+  radius="1"
+  wrapperStyle={{}}
+  wrapperClass=""
+  
+
+  /></span></button>
+                                </div>}
                         </div>
                         </form>
                     </div>
@@ -88,7 +123,7 @@ export default function Profile() {
                                     </h4>
                             <ul className="nav nav-tabs " id="myTab" role="tablist">
                                 <li className="nav-item">
-                                    <button   className='nav-link active'  id="home-tab" >About</button>
+                                    <button   className='nav-link active disabled'  id="home-tab" >About</button>
                                 </li>
                             </ul>
                             <div className="row">

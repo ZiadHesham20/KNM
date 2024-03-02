@@ -42,12 +42,25 @@ import Error from './Components/Error/Error';
 import Page404 from './Components/Page404/Page404';
 import AdminReviews from './Components/AdminReviews/AdminReviews';
 import ChangeTripPrice from './Components/ChangeTripPrice/ChangeTripPrice';
+import CategoryOf from './Components/CategoryOf/CategoryOf';
+import { Provider } from 'react-redux';
+import store from './Redux/store';
+import { ThemeProvider, createTheme } from '@mui/material';
 
 
 
 function App() {
+  const theme = createTheme({
+    palette: {
+      primary:{
+        main: '#FECD27'
+      }
+    }
+  })
   return <>
-  <Routes>
+  <Provider store={store}>
+  <ThemeProvider theme={theme}>
+  <Routes >
     {/* admin pathes */}
   <Route path='/admin' element={<ProtectedRoute><Admin dashboard={<Admin_dash/>}/></ProtectedRoute>}/>
   <Route path='/photos' element={<ProtectedRoute><Admin dashboard={<Photos/>}/></ProtectedRoute>}>
@@ -103,9 +116,12 @@ function App() {
   <Route path=':id' element={<ProtectedRoute><Admin dashboard={<AddUser/>}/></ProtectedRoute>}/>
   </Route>
   {/* user paths */}
-    <Route path='/' element={<Layout home={<Home/>}/>}/>
+    <Route path='/' index element={<Layout home={<Home/>}/>}/>
     <Route path='/aboutus' element={<Layout home={<AboutUs/>}/>}/>
     <Route path='/tours' element={<Layout home={<Tours/>}/>}/>
+    <Route path='/categoryOf' element={<Layout home={<CategoryOf/>}/>}>
+       <Route path=':category' element={<Layout home={<CategoryOf/>}/>}/>
+    </Route>
     <Route path='/contact' element={<Layout home={<Contactus/>}/>}/>
     <Route path='/profile' element={<Layout home={<Profile/>}/>}/>
     <Route path='/signin' element={<Layout home={<Signin/>}/>}/>
@@ -124,8 +140,10 @@ function App() {
     <Route path='/changePrice' element={<ProtectedRoute><Admin dashboard={<ChangeTripPrice/>}/></ProtectedRoute>}/>
     <Route path='/forgetPassword' element={<ForgetPassword/>}/>
     <Route path='/503' element={<Error/>}/>
-    <Route path='*' element={<Page404/>}/>
+    <Route path='*' element={<Home/>}/>
   </Routes>
+  </ThemeProvider>
+  </Provider>
   
   </>
 }

@@ -5,7 +5,16 @@ import $ from "jquery";
 import axios from 'axios';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from '@mui/material/Button';
 
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Typography from '@mui/material/Typography';
+import styled from '@emotion/styled'
 
 export default function AdminRides() {
   const [rides, setRides] = useState(null)
@@ -16,8 +25,28 @@ export default function AdminRides() {
   const [selectToDel, setSelectToDel] = useState(null)
   let ww = $(window).width()
   const header = `Bearer ${localStorage.getItem('auth_token')}`;
-  const delForm = useRef()
-  const delForm2 = useRef()
+
+  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+      padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+      padding: theme.spacing(1),
+    },
+  }));
+
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = (e) => {
+   setSelectToDel(e.target.id)
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+
+  
   const navigate = useNavigate();
 
   let {id} = useParams()
@@ -30,6 +59,7 @@ export default function AdminRides() {
     setPageNumber(data.meta.links)
     setCurrentPage(data.meta.current_page)
   setRides(data.data);
+  console.log(data.data);
   } catch (error) {
     if (error.code == 'ERR_NETWORK') {
       navigate('/503')
@@ -37,33 +67,15 @@ export default function AdminRides() {
   }
 
   }
-  function openModal(e){
-    setSelectToDel(e.target.id)
-    $('.deletesure').removeClass('d-none').addClass('d-flex')
-    $('.pagination').addClass('d-none')
-    
-  }
-  function closeModal(e){
-    setSelectToDel(e.target.id)
-    $('.deletesure').removeClass('d-flex').addClass('d-none')
-    $('.pagination').removeClass('d-none')
-    
-  }
+  
   async function deleteRide(e) {
     e.preventDefault()
     await axios.delete(`api/rides/${selectToDel}`,{ headers: { Authorization: header } })
-    $('.deletesure').removeClass('d-flex').addClass('d-none')
-    $('.pagination').removeClass('d-none')
+    setOpen(false);
     const newRides = rides.filter((elem)=>elem.id != selectToDel)
     setRides(newRides);
   }
-  let modal = delForm.current;
-  function handelclose(event) {
-    if (event.target != modal && event.target != delForm2.current) {
-      
-      $('.deletesure').removeClass('d-flex').addClass('d-none')
-    }
-  }
+ 
   useEffect(() => {
     getRides()
     
@@ -107,13 +119,13 @@ export default function AdminRides() {
       <td>{elem.phone}</td>
       <td>{elem.whatsNumber}</td>
       <td>{elem.note}</td>
-      <td>{elem.destination != null ?elem.destination.cost:""}</td>
+      <td>{elem.cost}</td>
       <td>{elem.code}</td>
       
         <td>
           <div className=' d-flex align-items-center'>
           <Link to={`/addRides/${elem.id}`} className='btn costume-btn btn-sm text-black  border-0 me-2'>Edit</Link>
-          {localStorage.getItem('role') == 2?<button id={elem.id} onClick={openModal} type="button"  className='btn btn-sm btn-danger border-0 '>Delete</button>:""}
+          {localStorage.getItem('role') == 2?<button id={elem.id} onClick={handleClickOpen} type="button"  className='btn btn-sm btn-danger border-0 '>Delete</button>:""}
           </div>
         </td>
     </tr>
@@ -123,25 +135,45 @@ export default function AdminRides() {
 </table>
 
     </div>
-    
-<div onClick={handelclose} className='position-fixed deletesure  d-none justify-content-center align-items-center'>
-<form onSubmit={deleteRide} >
-<div className='bg-white rounded-2 deletIndex'  >
-  <div className='d-flex justify-content-between pt-2 ps-2 border border-top-0 border-end-0 border-start-0' >
-  <h2 ref={delForm}>Delete</h2>
-  <FontAwesomeIcon icon={faX} onClick={closeModal} className='pe-3 pointer'/>
-  </div>
-  <div className='py-3 px-5' ref={delForm2}>
-  <h4>Are you sure?</h4>
-  <div className='d-flex justify-content-end pb-3 pe-3'>
-        <button type="button" onClick={closeModal} className="btn btn-outline-warning me-3">Close</button>
-        <button type="submit" className="btn btn-outline-danger">Yes</button>
-      </div>
-  </div>
-  
-</div>
-</form>
-</div>
+
+<BootstrapDialog 
+      sx={{
+        zIndex:'99999999999',
+        
+      }}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle className='fw-semibold' sx={{ m: 0, p: 2,fontFamily:'mainFont' }} id="customized-dialog-title">
+         Delete
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent  dividers>
+          <Typography sx={{fontFamily:'mainFont'}} paddingRight={5} f paddingLeft={5} gutterBottom>
+            <h5>Are you sure?</h5>
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{display:'flex',justifyContent:"center"}}>
+          <Button variant='outlined' sx={{fontFamily:'mainFont'}} autoFocus onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant='outlined' color='error' type='submit' sx={{fontFamily:'mainFont'}}  autoFocus onClick={deleteRide}>
+            Yes
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
 <nav aria-label="Page navigation example" className='d-flex  justify-content-center mt-3'>
   <ul className={ww < 600?"pagination pagination-sm":"pagination"}>
   {pageNumber.map((elem, idx) => (

@@ -9,11 +9,12 @@ import { BallTriangle } from 'react-loader-spinner';
 
 export default function Tour_Form() {
   let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
-  console.log(selectedCurr);
+  
 
   const [currencyBase, setCurrencyBase] = useState(selectedCurr == null?{base:'USD',cost:'1.00'}:{base: selectedCurr.selectedCurrencyBase,cost:selectedCurr.selectedCurrencyCost})
   const [tripCost, setTripCost] = useState(null)
   const [bookedTrip, setBookedTrip] = useState(null)
+  const [guestNumber, setGuestNumber] = useState(1)
   
   const currentDate = new Date();
   // const header = `Bearer ${localStorage.getItem('auth_token')}`;
@@ -34,6 +35,7 @@ export default function Tour_Form() {
   };
   async function submitMyTrip(e) {
     e.preventDefault();
+    // console.log(e.target.guest.value)
     await axios.post('api/trips',{
       userName:e.target.userName.value,
       phone:e.target.phone.value,
@@ -124,7 +126,7 @@ export default function Tour_Form() {
             <div>
             <label htmlFor="guest" className='fw-semibold'>Guest</label>
             </div>
-            <input className='form-control' type="number" name='guest' id='guest' min={1} max={12} required/>
+            <input className='form-control' type="number" name='guest' id='guest' min={1} max={12} onChange={(e)=>{setGuestNumber(e.target.value)}} required/>
             </div>
             <div>
             <div>
@@ -145,7 +147,7 @@ export default function Tour_Form() {
           </div>
           <div className='p-4 maincolor rounded-3 d-flex align-items-center justify-content-between'>
            
-            {tripCost != null? <><h5>Total </h5><h5 className='fw-bold'>{currencyBase.base == 'USD'?`$ ${tripCost.cost * currencyBase.cost}`:`€ ${(tripCost.cost * currencyBase.cost).toFixed(2)}`}</h5>
+            {tripCost != null? <><h5>Total </h5><h5 className='fw-bold'>{currencyBase.base == 'USD'?`$ ${tripCost.cost * currencyBase.cost * guestNumber}`:`€ ${(tripCost.cost * currencyBase.cost * guestNumber).toFixed(2)}`}</h5>
 </>:<h5>Price is not set yet </h5>}
           </div>
         </div>
@@ -161,7 +163,6 @@ export default function Tour_Form() {
   
   
     {bookedTrip != null? <div> 
-      {console.log(bookedTrip)}
         <p className='fw-semibold'>User Name: <span className='fw-normal'>{bookedTrip.name}</span></p> 
         
         <p className='fw-semibold'>Phone: <span className='fw-normal'>{bookedTrip.phoneNumber}</span></p> 
@@ -170,7 +171,7 @@ export default function Tour_Form() {
         <p className='fw-semibold'>Trip Date: <span className='fw-normal'>{bookedTrip.dateTime}</span></p> 
         <hr className='w-100'/>
         <div className='d-flex justify-content-between align-items-center'>
-        <p className='fw-semibold'>Total: <span className='fw-normal'>{currencyBase.base == 'USD'?`$ ${bookedTrip.cost * currencyBase.cost}`:`€ ${(bookedTrip.cost * currencyBase.cost).toFixed(2)}`}</span></p>
+        <p className='fw-semibold'>Total: <span className='fw-normal'>{currencyBase.base == 'USD'?`$ ${bookedTrip.cost * currencyBase.cost}`:`€ ${(bookedTrip.cost).toFixed(2)}`}</span></p>
         <p className='fw-semibold'>{bookedTrip.code}</p> 
         </div>
     </div>:""}

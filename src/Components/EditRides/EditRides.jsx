@@ -23,7 +23,7 @@ export default function EditRides() {
 
   async function getDestinations() {
     try {
-      let { data } = await axios.get(`api/destinations`)
+      let { data } = await axios.get(`api/destination/all`)
     console.log(data.data);
     setDestinations(data.data)
     } catch (error) {
@@ -40,9 +40,10 @@ export default function EditRides() {
     setRideOld({...rideOld,destination_id:data.data.destination.id,from:data.data.destination.from,to:data.data.destination.to,name:data.data.name,dateTime:data.data.dateTime,guest:data.data.guest,phoneNumber:data.data.phone,whatsNumber:data.data.whatsNumber,code:data.data.code})
 
     } catch (error) {
-      if (error.code == 'ERR_NETWORK') {
-        navigate('/503')
-      }
+      // if (error.code == 'ERR_NETWORK') {
+      //   navigate('/503')
+      // }
+      console.log(error);
     }
   }
   async function getCurrencies(){
