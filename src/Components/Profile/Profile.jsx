@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { BallTriangle, TailSpin } from 'react-loader-spinner';
 import $ from "jquery";
 import { useNavigate } from 'react-router-dom';
+import { imagesPath } from '../..';
+import { Alert } from '@mui/material';
+import { CheckCircleOutline } from '@mui/icons-material';
 
 export default function Profile() {
     const [userData, setUserData] = useState({
@@ -38,7 +41,28 @@ export default function Profile() {
     e.preventDefault();
     axios.put(`api/users/${id}`,userData,{ headers: { Authorization: header } })
   };
-  //wa2f hena
+  
+  const photoSucessElement = document.querySelector('#photoSucess');
+
+  function showPhotoSuccessForMoment(duration) {
+    // Remove the 'd-none' class to start the transition
+    photoSucessElement.classList.remove('d-none');
+    
+    // Set the opacity to 1 to make it fully visible
+    photoSucessElement.style.opacity = '1';
+
+    // Set a timeout to add the 'd-none' class back after the specified duration
+    setTimeout(() => {
+        // Set the opacity to 0 to start the fade-out transition
+        photoSucessElement.style.opacity = '0';
+
+        // After the transition duration, add the 'd-none' class
+        setTimeout(() => {
+            photoSucessElement.classList.add('d-none');
+        }, 500); // Match this duration with the CSS transition duration
+    }, duration);
+}
+
   const uploadPhoto = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -51,8 +75,10 @@ export default function Profile() {
         await axios.post(`api/users/update-profile`, formData, { headers: { Authorization: header } })
       .then((res) => {
           if (res.status == 200) {
-              alert('Your profile photo has been updated');
+              // alert('Your profile photo has been updated');
+              document.querySelector('#photoSucess').classList.remove('d-none')
              setUserData({...userData,profile_photo: res.data.path});
+             showPhotoSuccessForMoment(2000);
             
           } else {
              console.log(res);
@@ -93,12 +119,13 @@ export default function Profile() {
                     <div className="col-md-4">
                         
                        <form  method="post" onSubmit={uploadPhoto}> <div className="profile-img" encType='multipart/form-data'>
-                        {userData.profile_photo != null?<img src={`https://knm.knm-travels.com/storage/app/public/${userData.profile_photo}`} className='w-100 rounded-circle' alt="profile image"/>:<img src={`./Default.jpg`} className='w-100 rounded-circle' alt="profile image"/>}
-                            
+                        
+                        {userData.profile_photo != null?<img src={`${imagesPath + userData.profile_photo}`} className='w-100 rounded-circle' alt="profile image"/>:<img src={`./Default.jpg`} className='w-100 rounded-circle' alt="profile image"/>}
                             <div className="file my-2 btn btn-lg btn-primary">
                                 Change Photo
                                 <input type="file" name="file" onChange={handleFileChange} />
                             </div>
+                            
                             {photoUpdateButton == true?"":<div className='d-flex justify-content-center'>
                             <button type="submit" className='btn costume-btn d-none updatebutton text-black border-0 px-4 my-3 d-flex '>Update <span className='ms-2'><TailSpin
   visible={visibility}
@@ -113,6 +140,7 @@ export default function Profile() {
 
   /></span></button>
                                 </div>}
+                                
                         </div>
                         </form>
                     </div>
@@ -152,9 +180,14 @@ export default function Profile() {
                                             <div className="col-md-6">
                                                 <input type="text" defaultValue={userData.address} name='address' onChange={(e)=>{setUserData({...userData,address:e.target.value})}} className='form-control'/>
                                             </div>
+
                                             <div className='d-flex justify-content-end pt-3'>
                     <button type='submit' className='btn costume-btn text-black border-0 px-4 my-3 my-md-0 w-100'>Update Profile</button>
                     </div>
+<div>
+<Alert  id='photoSucess' className='mt-3 d-none' icon={<CheckCircleOutline fontSize="inherit" />} severity="success">Your profile image has been updated</Alert>
+
+</div>
                                         </div>
                             </div>
                            

@@ -30,8 +30,8 @@ export default function Admin({dashboard}) {
   }, [])
   
   return <>
-  {userData != null?<div className='container-fluid px-0' id='thechange'>
-  
+  {userData != null?
+  <div className='container-fluid px-0' id='thechange'>
   <div className='row w-100 mx-0 position-relative'>
     <div className='col-2 '>
       <div className=' px-md-2 pb-5 pt-0 rounded-3 position-sticky top-0 bottom-0'>
@@ -61,7 +61,6 @@ export default function Admin({dashboard}) {
     </div>
     </div>
   </div>
-  
     <Footer/>
     </div>:<div className='d-flex justify-content-center align-items-center vh-100'><BallTriangle 
   height={100}

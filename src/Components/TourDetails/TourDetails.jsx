@@ -16,6 +16,7 @@ import { Favorite, FavoriteBorder, Star, StarBorder } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux';
 import { getReviews } from '../../Redux/reviewSlice';
 import { getTours } from '../../Redux/tourSlice';
+import { imagesPath } from '../..';
 
 
 export default function TourDetails() {
@@ -164,7 +165,7 @@ function fetchReviews(){
           <div className='col-6 text-center costumeborder3 text-md-start  col-md-2 '>
             <div >
             <span className='detaillabel smallfont'>From</span>
-            <h5 className='highlightingcolor '>{currencyBase.base == 'USD'?`$ ${tour.cost * currencyBase.cost}`:`€ ${(tour.cost * currencyBase.cost).toFixed(2)}`}</h5>
+            <h5 className='highlightingcolor '>{currencyBase.base == 'USD'?`$ ${tour.cost * currencyBase.cost}`:currencyBase.base == 'EUR'?`€ ${(tour.cost * currencyBase.cost).toFixed(2)}`:`L.E ${(tour.cost * currencyBase.cost).toFixed(2)}`}</h5>
             </div>
           </div>
           <div className='col-6 text-center text-md-start col-md-2 costumeborder3 d-flex justify-content-center'>
@@ -197,7 +198,7 @@ function fetchReviews(){
 
             <div>
               
-              <img src={imageselected != null?`https://knm.knm-travels.com/storage/app/public/photos/${imageselected}`:"/default-image-icon-missing-picture-page-vector-40546530.jpg"} alt='tourimages' className='tourDetailsSelectedImage '/>
+              <img src={imageselected != null?`${imagesPath + 'photos/' +imageselected}`:"/default-image-icon-missing-picture-page-vector-40546530.jpg"} alt='tourimages' className='tourDetailsSelectedImage '/>
             </div>
           </div>
            
@@ -207,7 +208,7 @@ function fetchReviews(){
         className="mySwiper px-2"
       >
         {tour.imageUrls.map((elem,idx)=><SwiperSlide><div className='col-12 gy-3' key={idx}> <div  style={{'cursor':'pointer'}} >
-            <img src={`https://knm.knm-travels.com/storage/app/public/photos/${elem.image}`} className='imagelist rounded-2 ' id={elem.image} onClick={getimage}/>
+            <img src={`${imagesPath + 'photos/' +elem.image}`} className='imagelist rounded-2 ' id={elem.image} onClick={getimage}/>
             
           </div></div></SwiperSlide>)}
         
@@ -366,7 +367,7 @@ function fetchReviews(){
     <div style={{'background':'#F6F8FB'}} className='tourheight'>
     <figure className='overflow-hidden'>
      
-{ elem.imageUrls[0] != null ?<img src={`https://knm.knm-travels.com/storage/app/public/photos/${elem.imageUrls[0].image}`} className='w-100 imgscale rounded-1' alt="Tour Image" />:<img src="/default-image-icon-missing-picture-page-vector-40546530.jpg" className='w-100 imgscale rounded-1' alt="Tour Image" />}
+{ elem.imageUrls[0] != null ?<img src={`${imagesPath + 'photos/' + elem.imageUrls[0].image}`} className='w-100 imgscale rounded-1' alt="Tour Image" />:<img src="/default-image-icon-missing-picture-page-vector-40546530.jpg" className='w-100 imgscale rounded-1' alt="Tour Image" />}
     </figure>
     <figcaption className='p-4' >
     <h4>{elem.name}</h4>
@@ -387,7 +388,11 @@ function fetchReviews(){
   <span className='highlightingcolor fw-semibold fs-5'>$ {elem.cost * currencyBase.cost}</span>
 ) : currencyBase.base === 'EUR' ? (
   <span className='highlightingcolor fw-semibold fs-5'>€ {(elem.cost * currencyBase.cost).toFixed(2)}</span>
-) : null}
+) : currencyBase.base === 'EGP'? (
+  <span className='highlightingcolor fw-semibold fs-5'>L.E {(elem.cost * currencyBase.cost).toFixed(2)}</span>
+): null}
+
+
       </div>
      <div className='randomHover'>
      More Information <FontAwesomeIcon className="fa-solid fa-arrow-right highlightingcolor ms-2" icon={faArrowRight}/>

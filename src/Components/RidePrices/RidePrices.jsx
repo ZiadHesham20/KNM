@@ -111,16 +111,16 @@ export default function RidePrices() {
                     </div>
         </div>
         <div className='row py-4 align-items-center justify-content-evenly border border-1 border-end-0 border-start-0 border-top-0'>
-            <div className='col-lg-4'>
+            <div className='col-lg-5'>
             <h3>Economy Sedan</h3>
                 <div>
                     <figure>
-                        <img src="/Frame 6.svg" className='w-100' alt="Car ride" />
+                        <img src="/city-car-blank-surface-your-600nw-423993793-removebg-preview.png" className='w-100' alt="Car ride" />
                     </figure>
                     
                 </div>
             </div>
-            <div className='col-lg-4 py-3 d-flex justify-content-center justify-content-lg-end '>
+            <div className='col-lg-3 py-3 d-flex justify-content-center justify-content-lg-end '>
                 <div className='border border-1 border-bottom-0 border-top-0 px-4 '>
                     <div className='d-flex justify-content-center'>
                         <div className='d-flex align-items-center me-3'>
@@ -146,7 +146,7 @@ export default function RidePrices() {
                    <div className=' text-center'>
                    
                     
-                   <p className='fw-semibold fs-4'>{currencyBase.base == 'USD'?`$ ${Number(selectedDestinationCost) * currencyBase.cost}`:`€ ${(Number(selectedDestinationCost) * currencyBase.cost).toFixed(2)}`}</p>
+                   <p className='fw-semibold fs-4'>{currencyBase.base == 'USD'?`$ ${Number(selectedDestinationCost) * currencyBase.cost}`:currencyBase.base == 'EUR'?`€ ${Number(selectedDestinationCost) * currencyBase.cost}`:`L.E ${Number(selectedDestinationCost) * currencyBase.cost}`}</p>
                      {JSON.parse(localStorage.getItem('selectedDestinations')).from != '' && JSON.parse(localStorage.getItem('selectedDestinations')).to != ''?<Link to={'/transferform'} className='btn btn-lg costume-btn text-white fw-semibold border-0 px-5 mb-3 my-md-0 rounded-1'>Select</Link>:""} 
                 </div>
             </div>

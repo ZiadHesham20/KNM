@@ -6,6 +6,7 @@ import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurrency } from '../../Redux/currencySlice';
+import { imagesPath } from '../..';
 
 export default function Navbar() {
   let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
@@ -137,7 +138,7 @@ useEffect(() => {
             <Link className="nav-link navele  fw-bold navtext" aria-current="page" id='dashboard' onClick={active} to="/admin">Dashboard</Link>
           </li>:""}
           </ul>
-          {localStorage.getItem('auth_token') != null?<div  className='smallProfile me-2 d-flex align-items-center d-none d-md-flex'><Link to={'/profile'}>{userImage != null?<img src={`https://knm.knm-travels.com/storage/app/public/${userImage}`} className='w-100 rounded-circle' />:<img src="/Default.jpg" className='w-100 rounded-circle' />}</Link></div>:""}
+          {localStorage.getItem('auth_token') != null?<div  className='smallProfile me-2 d-flex align-items-center d-none d-md-flex'><Link to={'/profile'}>{userImage != null?<img src={`${imagesPath + userImage}`} className='w-100 rounded-circle' />:<img src="/Default.jpg" className='w-100 rounded-circle' />}</Link></div>:""}
           <div className="dropdown me-2">
   
   <select value={currencyBase.base} className='btn btn-outline-light px-4 currencylist btn-select text-black' id='currencychange' >

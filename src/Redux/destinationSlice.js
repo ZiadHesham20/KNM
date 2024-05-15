@@ -5,6 +5,7 @@ const header = `Bearer ${localStorage.getItem('auth_token')}`;
 
 export const getDestinations = createAsyncThunk('destinations/get',async ()=>{
 const {data} = await axios.get('api/destinations')
+console.log(data);
 return data.data
 })
 export const getPaginatorDestinations = createAsyncThunk('destinationsPaginator/get',async (id)=>{

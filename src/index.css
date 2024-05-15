@@ -601,6 +601,15 @@ box-shadow: 0 0 0 0.1rem #FECD27 !important;
   margin-right: 5px; /* Adjust spacing as needed */
   vertical-align: middle;
 }
+#photoSucess {
+  transition: opacity 0.5s ease-in-out; /* Adjust the duration as needed */
+}
+
+#photoSucess.d-none {
+  opacity: 0;
+  pointer-events: none; /* Optional: prevents interaction when hidden */
+}
+
 
 @media (width < 600px){
   .hone{

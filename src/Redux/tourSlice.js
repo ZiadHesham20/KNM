@@ -5,6 +5,7 @@ const header = `Bearer ${localStorage.getItem('auth_token')}`;
 
 export const getTours = createAsyncThunk("tours/get", async()=>{
     const {data} = await axios.get("api/travels")
+    console.log(data);
     return data.data
 })
 export const getToursInPaginator = createAsyncThunk("toursPage/get", async(id)=>{
@@ -13,6 +14,7 @@ export const getToursInPaginator = createAsyncThunk("toursPage/get", async(id)=>
 })
 export const getToursByCategory = createAsyncThunk("toursByCat/get", async(cat)=>{
     const {data} = await axios.get(`api/travels/by-category/${cat}`)
+    console.log(data);
     return data.data
 })
 export const deleteTour = createAsyncThunk("tour/delete", async(selectToDel)=>{

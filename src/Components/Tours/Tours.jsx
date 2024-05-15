@@ -9,6 +9,7 @@ import { BallTriangle } from 'react-loader-spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTours, getToursByCategory } from '../../Redux/tourSlice';
 import { getCategories } from '../../Redux/categorySlice';
+import { imagesPath } from '../..';
 
 export default function Tours() {
   let selectedCurr = JSON.parse(localStorage.getItem('selectedCurrency'))
@@ -20,7 +21,8 @@ export default function Tours() {
   const navigate = useNavigate();
 
   function fetchTours(){
-    dispatch(getTours())
+    // dispatch(getTours())
+    dispatch(getToursByCategory('All'))
   }
   function fetchCategories(){
     dispatch(getCategories())
@@ -75,7 +77,7 @@ export default function Tours() {
             <div className='container '>
           <div className='position-relative d-flex imghi '>
             <figure className='position-absolute  top-0 bottom-0'>
-            <img src={elem.imageUrls[0] != null?`https://knm.knm-travels.com/storage/app/public/photos/${elem.imageUrls[0].image}`:"/default-image-icon-missing-picture-page-vector-40546530.jpg"} className='w-100 imghi rounded-1 text-black' alt="Tour Image" />
+            <img src={elem.imageUrls[0] != null?`${imagesPath + 'photos/' + elem.imageUrls[0].image}`:"/default-image-icon-missing-picture-page-vector-40546530.jpg"} className='w-100 imghi rounded-1 text-black' alt="Tour Image" />
             </figure>
             
             <div className='container rounded-1 slideslayer z-1'>
@@ -83,7 +85,7 @@ export default function Tours() {
                 <div className='col-12 mb-5'>
                     <div className='d-flex justify-content-end p-3'>
                         <div className='fw-light'>
-                            From <span className='fw-semibold'>{currencyBase.base == 'USD'?`$ ${elem.cost * currencyBase.cost}`:`€ ${(elem.cost * currencyBase.cost).toFixed(2)}`}</span>
+                            From <span className='fw-semibold'>{currencyBase.base == 'USD'?`$ ${elem.cost * currencyBase.cost}`:currencyBase.base == 'EUR'?`€ ${(elem.cost * currencyBase.cost).toFixed(2)}`:`L.E ${(elem.cost * currencyBase.cost).toFixed(2)}`}</span>
                         </div>
                     </div>
                 </div>

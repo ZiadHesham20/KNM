@@ -17,6 +17,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import styled from '@emotion/styled'
+import { imagesPath } from '../..';
 
 export default function AdminCategories() {
   const [selectToDel, setSelectToDel] = useState(null)
@@ -104,7 +105,7 @@ export default function AdminCategories() {
       <th scope="row"  className='fw-semibold'>{elem.description}</th>
       <th scope="row"  className='fw-semibold'>
       <figure>
-    <img src={elem.photo != null?`https://knm.knm-travels.com/storage/app/public/${elem.photo}`:'/default-image-icon-missing-picture-page-vector-40546530.jpg'} className='catImageAdmin rounded-3' alt="Tour Image" />
+    <img src={elem.photo != null?`${imagesPath + elem.photo}`:'/default-image-icon-missing-picture-page-vector-40546530.jpg'} className='catImageAdmin rounded-3' alt="Tour Image" />
   </figure>
       </th>
         <td>

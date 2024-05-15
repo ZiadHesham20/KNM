@@ -35,8 +35,6 @@ export default function Signup() {
                     setErrors({ confirmPassword: `Password Doesnt Match` })
                 }
             })
-
-
         } catch (error) {
             setErrors(error.response.data.errors);
             
@@ -80,7 +78,6 @@ setLoading(false)
                                 <div className='w-100'>
                                     <label htmlFor="firstName" className="form-label fw-semibold">Name</label>
                                     <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="form-control form-control-md" id="firstName" placeholder="Enter your name" required />
-
                                 </div>
                             </div>
                             {/* Email input */}
@@ -99,15 +96,12 @@ setLoading(false)
                                 <label htmlFor="Address" className="form-label fw-semibold">Address</label>
                                 <input type="text" className="form-control form-control-md" value={address} onChange={(e) => setAddress(e.target.value)} id="Address" placeholder="Enter your Address" required />
                             </div>
-
                             {/* password input */}
-
                             <div className="mb-3 d-flex justify-content-between">
                                 {errors.password == null ? <div className='inputform2 position-relative'>
-                                   <div>
-                                   <label className="form-label fw-semibold" htmlFor="password">Password</label>
-                                   </div>
-
+                                    <div>
+                                        <label className="form-label fw-semibold" htmlFor="password">Password</label>
+                                    </div>
                                     <TextField
                                         sx={{
                                             "& input::placeholder": {
@@ -115,7 +109,7 @@ setLoading(false)
                                                 fontFamily: 'mainFont',
                                                 opacity: '0.8'
                                             },
-                                            "& input":{
+                                            "& input": {
                                                 fontFamily: 'mainFont'
                                             }
                                         }}
@@ -139,8 +133,6 @@ setLoading(false)
                                             </InputAdornment>
                                         }}
                                     />
-
-
                                 </div> : <div className='inputform2 position-relative'>
                                     <label className="form-label fw-semibold" htmlFor="password">Password</label>
                                     <TextField
@@ -150,7 +142,7 @@ setLoading(false)
                                                 fontFamily: 'mainFont',
                                                 opacity: '0.8'
                                             },
-                                            "& input":{
+                                            "& input": {
                                                 fontFamily: 'mainFont'
                                             }
                                         }}
@@ -177,20 +169,18 @@ setLoading(false)
                                                 </IconButton>
                                             </InputAdornment>
                                         }}
-
                                     />
-                                    
                                 </div>}
                                 {errors.confirmPassword == null ? <div className='inputform2 position-relative'>
                                     <label className="form-label fw-semibold" htmlFor="password">Confirm Password</label>
-                                     <TextField
+                                    <TextField
                                         sx={{
                                             "& input::placeholder": {
                                                 fontSize: "1rem",
                                                 fontFamily: 'mainFont',
                                                 opacity: '0.8'
                                             },
-                                            "& input":{
+                                            "& input": {
                                                 fontFamily: 'mainFont'
                                             }
                                         }}
@@ -223,7 +213,7 @@ setLoading(false)
                                                 fontFamily: 'mainFont',
                                                 opacity: '0.8'
                                             },
-                                            "& input":{
+                                            "& input": {
                                                 fontFamily: 'mainFont'
                                             }
                                         }}
@@ -250,33 +240,21 @@ setLoading(false)
                                                 </IconButton>
                                             </InputAdornment>
                                         }}
-
                                     />
-                                    
-                                   
                                 </div>}
                             </div>
-
-
-
                             <div className='d-flex justify-content-center'>
-
-<button className='btn w-50 d-flex justify-content-center' style={{backgroundColor:'#FECD27'}}>{loading == true?<span ><TailSpin
-  visible={true}
-  height="25"
-  width="25"
-  color="black"
-  ariaLabel="tail-spin-loading"
-  radius="1"
-  wrapperStyle={{}}
-  wrapperClass=""
-  
-
-  /></span>:"Signup"}</button>
-
-
-
-</div>
+                                <button className='btn w-50 d-flex justify-content-center' style={{ backgroundColor: '#FECD27' }}>{loading == true ? <span ><TailSpin
+                                    visible={true}
+                                    height="25"
+                                    width="25"
+                                    color="black"
+                                    ariaLabel="tail-spin-loading"
+                                    radius="1"
+                                    wrapperStyle={{}}
+                                    wrapperClass=""
+                                /></span> : "Signup"}</button>
+                            </div>
                         </form>
                         <div className='text-center mb-5'>
                             Already have account?<Link to={'/signin'} className='text-decoration-none ms-2'>Login</Link>

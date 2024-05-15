@@ -5,6 +5,7 @@ import $ from "jquery";
 import { BallTriangle } from 'react-loader-spinner';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { imagesPath } from '../..';
 //Fadel en elsora tetmseh
 export default function Photos() {
   const [tours, setTours] = useState([])
@@ -61,7 +62,7 @@ export default function Photos() {
     <td><div className='row'>
       {elem.imageUrls.map((img,idx)=><div className='col-md-3' key={idx}>
       <figure className='position-relative'>
-        <img src={`https://knm.knm-travels.com/storage/app/public/photos/${img.image}`} className='imagelist2  rounded-2' alt="Tour Image" />
+        <img src={`${imagesPath + 'photos/' + img.image}`} className='imagelist2  rounded-2' alt="Tour Image" />
         <div className='deleteImage pointer' >
         <img src="/delete_svgrepo.com.svg" className='w-100' id={img.id} alt="Delete Icon" onClick={deleteImage}/>
         </div>

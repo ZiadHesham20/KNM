@@ -18,6 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import styled from '@emotion/styled'
+import { imagesPath } from '../..';
 
 export default function AdminTours() {
   const [selectToDel, setSelectToDel] = useState(null)
@@ -84,7 +85,7 @@ export default function AdminTours() {
     <th scope="col">Price</th>
     <th scope="col">Duration</th>
     <th scope="col">Booked</th>
-    <th scope="col"><Link to={'/photos'} className='text-decoration-none text-black'>Photos <FontAwesomeIcon className="fa-solid fa-arrow-right highlightingcolor " icon={faArrowRight}/></Link></th>
+    <th scope="col"><Link to={'/photos'} className='text-decoration-none text-black d-flex align-items-center'>Photos <FontAwesomeIcon className="fa-solid fa-arrow-right highlightingcolor ms-1" icon={faArrowRight}/></Link></th>
     <th scope="col">Options</th>
   </tr>
 </thead>
@@ -102,8 +103,9 @@ export default function AdminTours() {
     <td><div className='row'>
       {elem.imageUrls.map((img,idx)=><div className='col-12' key={idx}>
       <figure>
-    
-        <img src={`https://knm.knm-travels.com/storage/app/public/photos/${img.image}`} className='w-100 rounded-3' alt="Tour Image" />
+       {console.log(img)}
+      {/* https://knm.knm-travels.com/storage/app/public/photos/ */}
+        <img src={`${imagesPath + 'photos/' + img.image}`} className='w-100 rounded-3' alt="Tour Image" />
       </figure>
       </div>)}
       </div></td>

@@ -54,12 +54,13 @@ export default function AdminRides() {
     
   try {
     let { data } = await axios.get(`api/rides?page=${id}`,{ headers: { Authorization: header } })
+    
     setPageNext(data.links.next)
     setPagePrev(data.links.prev)
     setPageNumber(data.meta.links)
     setCurrentPage(data.meta.current_page)
-  setRides(data.data);
-  console.log(data.data);
+  setRides(data.data.sort((a,b)=> a.id - b.id));
+
   } catch (error) {
     if (error.code == 'ERR_NETWORK') {
       navigate('/503')

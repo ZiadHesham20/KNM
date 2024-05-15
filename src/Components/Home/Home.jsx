@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getTours } from './../../Redux/tourSlice';
 import { getCategories } from '../../Redux/categorySlice';
 import { getDestinations } from '../../Redux/destinationSlice';
+import { imagesPath } from '../..';
 // azbt hett el blur
 
 export default function Home() {
@@ -60,7 +61,8 @@ export default function Home() {
   function submitRideForm(e) {
     e.preventDefault()
 
-    localStorage.setItem("selectedDestinations",JSON.stringify({from:e.target.from.value,to:e.target.to.value,dateTime:e.target.futureDate.value}))
+    if (e.target.from.value != e.target.to.value) {
+      localStorage.setItem("selectedDestinations",JSON.stringify({from:e.target.from.value,to:e.target.to.value,dateTime:e.target.futureDate.value}))
 
     //setCurrentDestinations(destinations.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to))
     if (destinations.filter(elem=>elem.from == JSON.parse(localStorage.getItem('selectedDestinations')).from && elem.to == JSON.parse(localStorage.getItem('selectedDestinations')).to).length != 0) {
@@ -68,10 +70,15 @@ export default function Home() {
     }else{
       navigate('/transferform')
     }
+    }else{
+      // 
+      document.querySelector('#fromInput').classList.add('is-invalid');
+      document.querySelector('#toInput').classList.add('is-invalid')
+    }
   }
   // Slider settings
   
-    var settings = {
+    const settings = {
         dots: false,
         infinite: false,
         speed: 200,
@@ -142,6 +149,7 @@ export default function Home() {
      fetchCategories()
      closeOffcanvas()
      
+     
       }, [ww])
       
   return <>
@@ -178,8 +186,9 @@ export default function Home() {
                     <div className='col-md-3'>
                     <div className='costumeborder2 px-3'>
                     <label htmlFor="pickup" className='fw-semibold'>Pickup</label>
-                    <select className='form-control' name="from" required>
-                      
+                    <select className='form-control ' id='fromInput' name="from" onChange={()=>{ document.querySelector('#fromInput').classList.remove('is-invalid');
+      document.querySelector('#toInput').classList.remove('is-invalid')}} required>
+                    <option value=""></option>
                       {destinations != null?destinations.map((elem,idx)=><option key={idx} value={elem.from}>{elem.from}</option>):""}
 
                     </select>
@@ -193,8 +202,8 @@ export default function Home() {
                     <div className='col-md-3 my-3'>
 <div className='costumeborder px-3'>
 <label htmlFor="dropoff" className='fw-semibold'>Dropoff</label>
-                               <select className='form-control' name="to" required>
-                                
+                               <select className='form-control' id='toInput' name="to" required>
+                               <option value=""></option>
                                 {destinations != null?destinations.map((elem,idx)=><option key={idx} value={elem.to}>{elem.to}</option>):""}
                     </select>
                     </div>
@@ -245,7 +254,8 @@ export default function Home() {
   <Link to={`/categoryOf/${elem.slug}`}>
   <div className='categoryItem rounded-3'>
     <figure className='position-relative overflow-hidden rounded-3'>
-      <img src={elem.photo == null?'/default-image-icon-missing-picture-page-vector-40546530.jpg':`https://knm.knm-travels.com/storage/app/public/${elem.photo}`} className='w-100 rounded-3' id='catImage' alt="categoryImage" />
+      {/* image src */}
+      <img src={elem.photo == null?'/default-image-icon-missing-picture-page-vector-40546530.jpg':`${imagesPath + elem.photo}`} className='w-100 rounded-3' id='catImage' alt="categoryImage" />
       <div className='position-absolute top-0 bottom-0 end-0 start-0 catlayer rounded-3'>
         <div className='text-center d-flex w-100 h-100 justify-content-center align-items-end pb-3'>
           <div>
@@ -275,8 +285,9 @@ export default function Home() {
           {popularTours != null?popularTours.map((elem,idx)=><div key={idx} className='container '>
           
           <Link to={`/tourdetails/${elem.slug}`} className='text-decoration-none text-black'><div className='position-relative d-flex imghi '>
-            <figure className='position-absolute  top-0 bottom-0'>            
-            <img src={elem.imageUrls[0] != undefined ? `https://knm.knm-travels.com/storage/app/public/photos/${elem.imageUrls[0].image}`:"/default-image-icon-missing-picture-page-vector-40546530.jpg"} className='w-100 imghi rounded-1' alt="Tour Image" />
+            <figure className='position-absolute  top-0 bottom-0'>  
+                  
+            <img src={elem.imageUrls[0] != undefined ? `${imagesPath + 'photos/' + elem.imageUrls[0].image}`:"/default-image-icon-missing-picture-page-vector-40546530.jpg"} className='w-100 imghi rounded-1' alt="Tour Image" />
             </figure>
             
             <div className='container rounded-1 slideslayer z-1'>
@@ -288,7 +299,8 @@ export default function Home() {
                         </div>
                         <div className='fw-light'>
                             From <span className='fw-semibold'>
-                            {currencyBase.base == 'USD'?`$ ${elem.cost * currencyBase.cost}`:`€ ${(elem.cost * currencyBase.cost).toFixed(2)}`}
+                              
+                            {currencyBase.base == 'USD'?`$ ${elem.cost * currencyBase.cost}`:currencyBase.base == 'EUR'?`€ ${(elem.cost * currencyBase.cost).toFixed(2)}`:`L.E ${(elem.cost * currencyBase.cost).toFixed(2)}`}
                             </span>
                         </div>
                     </div>

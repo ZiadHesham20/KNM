@@ -13,10 +13,13 @@ import axios from 'axios';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-axios.defaults.baseURL = 'https://knm.knm-travels.com/public/'
+// 'https://knm.knm-travels.com/public/'
+
+axios.defaults.baseURL = 'http://127.0.0.1:8000/'
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
-
+// image oldpath `https://knm.knm-travels.com/storage/app/public/
+export const imagesPath = 'http://127.0.0.1:8000/storage/'
 root.render(
   <BrowserRouter>
     <App />
